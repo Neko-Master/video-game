@@ -10,7 +10,7 @@ fenetre=pygame.display.set_mode((largeur,hauteur))
 
 
 # lecture de l'image du perso
-imagePerso = pygame.image.load("perso.png").convert_alpha()
+imagePerso = pygame.image.load("Images/perso.png").convert_alpha()
 
 # creation d'un rectangle pour positioner l'image du personnage
 rectPerso = imagePerso.get_rect()
@@ -18,7 +18,7 @@ rectPerso.x = 60
 rectPerso.y = 80
 
 # lecture de l'image du fond
-imageFond = pygame.image.load("background.jpg").convert()
+imageFond = pygame.image.load("Images/background.jpg").convert()
 
 # creation d'un rectangle pour positioner l'image du fond
 rectFond = imageFond.get_rect()

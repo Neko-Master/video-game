@@ -4,39 +4,39 @@ import copy
 
 def lire_images():
     imageBank = {}
-    imageBank["perso"]=pygame.image.load("perso.png").convert_alpha()
+    imageBank["perso"]=pygame.image.load("Images/perso.png").convert_alpha()
     imageBank["perso"]= pygame.transform.scale(imageBank["perso"], (48, 48))
-    imageBank["balle"]=pygame.image.load("balle.png").convert_alpha()
-    imageBank["fond"]=pygame.image.load("background.jpg").convert_alpha()
-    imageBank["mur"]=pygame.image.load("mur.png").convert_alpha()
+    imageBank["balle"]=pygame.image.load("Images/balle.png").convert_alpha()
+    imageBank["fond"]=pygame.image.load("Images/background.jpg").convert_alpha()
+    imageBank["mur"]=pygame.image.load("Images/mur.png").convert_alpha()
     imageBank["mur"]= pygame.transform.scale(imageBank["mur"], (64, 64))
 
     imageBank["flame"] = []
     for i in range(4):
-      imageBank["flame"].append(pygame.image.load("flameBall_"+str(i)+".png").convert_alpha())
+      imageBank["flame"].append(pygame.image.load("Images/Animations/flameBall_"+str(i)+".png").convert_alpha())
 
     imageBank["mc"] ={}
     imageBank["mc"]["droite"]=[]
     for i in range(3):
-      image = pygame.image.load("mc-right-"+str(i)+".png").convert_alpha()
+      image = pygame.image.load("Images/Animations/mc-right-"+str(i)+".png").convert_alpha()
       image = pygame.transform.scale(image, (48, 48))
       imageBank["mc"]["droite"].append(image)
 
     imageBank["mc"]["gauche"]=[]
     for i in range(3):
-      image = pygame.image.load("mc-left-"+str(i)+".png").convert_alpha()
+      image = pygame.image.load("Images/Animations/mc-left-"+str(i)+".png").convert_alpha()
       image = pygame.transform.scale(image, (48, 48))
       imageBank["mc"]["gauche"].append(image)
 
     imageBank["mc"]["haut"]=[]
     for i in range(3):
-      image = pygame.image.load("mc-up-"+str(i)+".png").convert_alpha()
+      image = pygame.image.load("Images/Animations/mc-up-"+str(i)+".png").convert_alpha()
       image = pygame.transform.scale(image, (48, 48))
       imageBank["mc"]["haut"].append(image)
 
     imageBank["mc"]["bas"]=[]
     for i in range(3):
-      image = pygame.image.load("mc-down-"+str(i)+".png").convert_alpha()
+      image = pygame.image.load("Images/Animations/mc-down-"+str(i)+".png").convert_alpha()
       image = pygame.transform.scale(image, (48, 48))
       imageBank["mc"]["bas"].append(image)
 

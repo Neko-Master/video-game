@@ -4,10 +4,10 @@ import copy
 
 def lire_images():
     imageBank = {}
-    imageBank["perso"]=pygame.image.load("perso.png").convert_alpha()
+    imageBank["perso"]=pygame.image.load("Images/perso.png").convert_alpha()
     imageBank["perso"]= pygame.transform.scale(imageBank["perso"], (48, 48))
-    imageBank["balle"]=pygame.image.load("balle.png").convert_alpha()
-    imageBank["fond"]=pygame.image.load("background.jpg").convert_alpha()
+    imageBank["balle"]=pygame.image.load("Images/balle.png").convert_alpha()
+    imageBank["fond"]=pygame.image.load("Images/background.jpg").convert_alpha()
     imageBank["mur"]=pygame.image.load("mur.jpg").convert_alpha()
     imageBank["mur"]= pygame.transform.scale(imageBank["mur"], (64, 64))
 

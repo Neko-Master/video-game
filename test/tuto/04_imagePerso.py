@@ -10,7 +10,7 @@ fenetre=pygame.display.set_mode((largeur,hauteur))
 
 
 # lecture de l'image du perso
-imagePerso = pygame.image.load("perso.png").convert_alpha()
+imagePerso = pygame.image.load("Images/perso.png").convert_alpha()
 
 # creation d'un rectangle pour positioner l'image du personnage
 rectPerso = imagePerso.get_rect()
