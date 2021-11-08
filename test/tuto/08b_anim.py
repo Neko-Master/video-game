@@ -11,6 +11,8 @@ def lire_images():
     imageBank["perso"] = pygame.transform.scale(imageBank["perso"], (48, 48))
     imageBank["exit_button"] = pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/signExit.png")
     imageBank["exit_button"] = pygame.transform.scale(imageBank["exit_button"], (50, 50))
+    imageBank["start_button"] = pygame.image.load("Images/start_button.png")
+    imageBank["quit_button"] = pygame.image.load("Images/quit_button.png")
     imageBank["balle"] = pygame.image.load("Images/balle.png").convert_alpha()
     imageBank["fond"] = pygame.image.load(
         "Images/Animations/platformerGraphics_otherStyle/bg_castle.png").convert_alpha()
@@ -22,30 +24,30 @@ def lire_images():
         imageBank["flame"].append(pygame.image.load("Images/Animations/flameBall_" + str(i) + ".png").convert_alpha())
     playerSize = 48
     playerHeight = 64.59
-    imageBank["mc"] = {}
-    imageBank["mc"]["droite"] = []
+    imageBank["player_4"] = {}
+    imageBank["player_4"]["droite"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-right-" + str(i) + ".png").convert_alpha()
         image = pygame.transform.scale(image, (playerSize, playerSize))
-        imageBank["mc"]["droite"].append(image)
+        imageBank["player_4"]["droite"].append(image)
 
-    imageBank["mc"]["gauche"] = []
+    imageBank["player_4"]["gauche"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-left-" + str(i) + ".png").convert_alpha()
         image = pygame.transform.scale(image, (playerSize, playerSize))
-        imageBank["mc"]["gauche"].append(image)
+        imageBank["player_4"]["gauche"].append(image)
 
-    imageBank["mc"]["haut"] = []
+    imageBank["player_4"]["haut"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-up-" + str(i) + ".png").convert_alpha()
         image = pygame.transform.scale(image, (playerSize, playerSize))
-        imageBank["mc"]["haut"].append(image)
+        imageBank["player_4"]["haut"].append(image)
 
-    imageBank["mc"]["bas"] = []
+    imageBank["player_4"]["bas"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-down-" + str(i) + ".png").convert_alpha()
         image = pygame.transform.scale(image, (playerSize, playerSize))
-        imageBank["mc"]["bas"].append(image)
+        imageBank["player_4"]["bas"].append(image)
 
         # create 3 players you can choose from
         for i in range(3):
@@ -67,8 +69,10 @@ def lire_images():
                 if int(j) < 9:
                     imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
                         pygame.image.load(
-                        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
-                            i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(),True, False), (playerSize, playerHeight)))
+                            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(
+                                i + 1) + "_walk/PNG/p" + str(
+                                i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(), True, False),
+                        (playerSize, playerHeight)))
                 else:
                     imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
                         pygame.image.load(
@@ -286,15 +290,25 @@ for j in range(3):
     for i in range(3):
         fondarr.append(ElementGraphique(imageBank["fond"], fenetre, j * 256, 256 * i))
 
-exitButton = Button(imageBank["exit_button"], fenetre, (256 * 3) - 53, 3)
+playerButtons = []
+for i in range(3):
+    playerButtons.append(Button(pygame.image.load(
+        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
+            i + 1) + "_walk01.png"),
+        fenetre, 100 * (i + 1), 256/2))
+playerButtons.append(Button(pygame.image.load("Images/Animations/mc-right-0.png"), fenetre, 400, 256/2))
 
-## Ajoutons un texte fixe dans la fenetre :
+ingameExitButton = Button(imageBank["exit_button"], fenetre, (256 * 3) - 53, 3)
+menuStartButton = Button(imageBank["start_button"], fenetre, 256 / 2, 256)
+menuQuitButton = Button(imageBank["quit_button"], fenetre, 256 * 2, 256)
+
 # Choix de la police pour le texte
 font = pygame.font.Font(None, 34)
-
 # Creation de l'image correspondant au texte
-texte = ElementGraphique(font.render('dot biten', True, (3, 45, 49)), fenetre, x=10, y=10)
-
+texte = ElementGraphique(font.render('The platformer of Maximilian Amougou and Tony Mardivirin', True, (3, 45, 49)),
+                         fenetre, x=10, y=10)
+textePlayerMenu = ElementGraphique(font.render('Choose Player by clicking on him:', True, (3, 45, 49)), fenetre, x=100,
+                                   y=100)
 maMap = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [1, 0, 0, 0, 1, 0, 1, 0, 1, 1],
          [1, 0, 1, 1, 1, 0, 0, 0, 1, 1],
@@ -313,6 +327,9 @@ horloge = pygame.time.Clock()
 #   - en cliquant sur le bouton de fermeture
 i = 1;
 continuer = 1
+main_menu = True
+player_selection_menu = False
+defaultPlayer = 1
 while continuer:
 
     # fixons le nombre max de frames / secondes
@@ -323,56 +340,87 @@ while continuer:
 
     # on recupere l'etat du clavier
     touches = pygame.key.get_pressed();
-
-    # si la touche ESC est enfoncee, on sortira
-    # au debut du prochain tour de boucle
-    if touches[pygame.K_ESCAPE] or exitButton.clicked == 1:
-        continuer = 0
-
-    perso.deplacer()
-
-    '''
-    if collide_map(maMap,perso.rect):
-        print("Touché")
-    else :
-        print("libre")
-    '''
-
-    for e in mes_balles:
-        e.deplacer()
-
-    # collisions avec les balles
-    '''
-    for b in mes_balles:
-        if perso.contact(b) :
-            continuer = 0
-    '''
-    '''
-    for b in mes_balles:
-        for bb in mes_balles:
-            if b != bb and b.contact(bb) :
-                b.dx = -b.dx
-                b.dy = -b.dy
-    '''
-
-    # Affichage du fond
     for fonds in fondarr:
         fonds.afficher()
+    # si la touche ESC est enfoncee, on sortira
+    # au debut du prochain tour de boucle
+    if touches[pygame.K_ESCAPE]:
+        continuer = 0
+    if main_menu == True:
+        print("Main Menu")
+        if menuQuitButton.clicked == True:
+            continuer = 0
+        if menuStartButton.clicked == True:
+            main_menu = False
+            player_selection_menu = True
+            fenetre.fill((0, 0, 0))
+            pygame.display.flip()
+        # Affichage du Texte
+        texte.afficher()
+        menuStartButton.afficher()
+        menuQuitButton.afficher()
+        pygame.display.flip()
 
-    afficher_map(maMap, imageBank)
+    elif player_selection_menu == True:
+        print("playerSelection")
+        textePlayerMenu.afficher()
+        ingameExitButton.afficher()
+        if ingameExitButton.clicked == True:
+            continuer = 0
+        for i in range(4):
+            playerButtons[i].afficher()
+            if playerButtons[i].clicked == True:
+                defaultPlayer = i + 1
+                perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 80, 70)
+                player_selection_menu = False
+                fenetre.fill((0, 0, 0))
+                pygame.display.flip()
+        pygame.display.flip()
 
-    # Affichage Perso
-    perso.afficher()
+    else:
+        if ingameExitButton.clicked == 1:
+            continuer = 0;
+        perso.deplacer()
 
-    for e in mes_balles:
-        e.afficher()
+        '''
+        if collide_map(maMap,perso.rect):
+            print("Touché")
+        else :
+            print("libre")
+        '''
 
-    # Affichage du Texte
-    texte.afficher()
+        for e in mes_balles:
+            e.deplacer()
 
-    exitButton.afficher()
-    # rafraichissement
-    pygame.display.flip()
+        # collisions avec les balles
+        '''
+        for b in mes_balles:
+            if perso.contact(b) :
+                continuer = 0
+        '''
+        '''
+        for b in mes_balles:
+            for bb in mes_balles:
+                if b != bb and b.contact(bb) :
+                    b.dx = -b.dx
+                    b.dy = -b.dy
+        '''
+
+        # Affichage du fond
+        for fonds in fondarr:
+            fonds.afficher()
+
+        afficher_map(maMap, imageBank)
+
+        # Affichage Perso
+        perso.afficher()
+
+        for e in mes_balles:
+            e.afficher()
+
+        ingameExitButton.afficher()
+        # rafraichissement
+        pygame.display.flip()
 
     # Si on a clique sur le bouton de fermeture on sortira
     # au debut du prochain tour de boucle
