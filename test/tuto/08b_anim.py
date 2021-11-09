@@ -23,6 +23,10 @@ def lire_images():
     imageBank["flame"] = []
     for i in range(4):
         imageBank["flame"].append(pygame.image.load("Images/Animations/flameBall_" + str(i) + ".png").convert_alpha())
+    for i in range(10):
+        imageBank["number_" + str(i)] = pygame.image.load(
+            "Images/Animations/platformerGraphics_otherStyle/HUD/hud_" + str(i) + ".png").convert_alpha()
+        imageBank["number_" + str(i)] = pygame.transform.scale(imageBank["number_" + str(i)], (30, 30))
     playerSize = 48
     playerHeight = 64.59
     imageBank["player_4"] = {}
@@ -335,6 +339,10 @@ main_menu = True
 player_selection_menu = False
 game_paused = False
 defaultPlayer = 1
+playtimePerLvl = 300
+start_ticks = pygame.time.get_ticks()
+secondsPassed = 0
+timerBuffer = 0
 while continuer:
 
     # fixons le nombre max de frames / secondes
@@ -380,10 +388,12 @@ while continuer:
                 perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 80, 70)
                 player_selection_menu = False
                 fenetre.fill((0, 0, 0))
+                start_ticks = pygame.time.get_ticks()
                 pygame.display.flip()
         pygame.display.flip()
 
     elif game_paused:
+        timerBuffer = secondsPassed
         pauseText.afficher()
         pygame.display.flip()
         for event in pygame.event.get():
@@ -393,10 +403,17 @@ while continuer:
                     break
                 if event.key == pygame.K_n:
                     game_paused = False
+                    start_ticks = pygame.time.get_ticks()
 
     else:
         if ingameExitButton.clicked == 1:
-            game_paused=True
+            game_paused = True
+        secondsPassed = int(
+            timerBuffer + (pygame.time.get_ticks() - start_ticks) / 1000)  # calculate how many seconds played
+        if secondsPassed > 300:  # you have 5 min to reach the end
+            continuer = 0
+        playtimePerLvl = 300 - secondsPassed
+
         perso.deplacer()
 
         '''
@@ -435,6 +452,8 @@ while continuer:
         for e in mes_balles:
             e.afficher()
 
+        for i in range(3):
+            ElementGraphique(fenetre, imageBank["number_" + str(i)], 20 * (i + 1), 50).afficher()
         ingameExitButton.afficher()
         # rafraichissement
         pygame.display.flip()
