@@ -3,6 +3,7 @@ import os.path
 import pygame
 import random
 import copy
+import sys
 
 
 def lire_images():
@@ -295,8 +296,8 @@ for i in range(3):
     playerButtons.append(Button(pygame.image.load(
         "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
             i + 1) + "_walk01.png"),
-        fenetre, 100 * (i + 1), 256/2))
-playerButtons.append(Button(pygame.image.load("Images/Animations/mc-right-0.png"), fenetre, 400, 256/2))
+        fenetre, 100 * (i + 1), 256 / 2))
+playerButtons.append(Button(pygame.image.load("Images/Animations/mc-right-0.png"), fenetre, 400, 256 / 2))
 
 ingameExitButton = Button(imageBank["exit_button"], fenetre, (256 * 3) - 53, 3)
 menuStartButton = Button(imageBank["start_button"], fenetre, 256 / 2, 256)
@@ -309,6 +310,9 @@ texte = ElementGraphique(font.render('The platformer of Maximilian Amougou and T
                          fenetre, x=10, y=10)
 textePlayerMenu = ElementGraphique(font.render('Choose Player by clicking on him:', True, (3, 45, 49)), fenetre, x=100,
                                    y=100)
+pauseText = ElementGraphique(
+    font.render("Quit game? Press 'Y'es to end it all or 'N'o to resume the fun", True, (3, 45, 49)), fenetre, x=75,
+    y=100)
 maMap = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [1, 0, 0, 0, 1, 0, 1, 0, 1, 1],
          [1, 0, 1, 1, 1, 0, 0, 0, 1, 1],
@@ -329,6 +333,7 @@ i = 1;
 continuer = 1
 main_menu = True
 player_selection_menu = False
+game_paused = False
 defaultPlayer = 1
 while continuer:
 
@@ -339,18 +344,19 @@ while continuer:
     # print (i)
 
     # on recupere l'etat du clavier
-    touches = pygame.key.get_pressed();
+    touches = pygame.key.get_pressed()
     for fonds in fondarr:
         fonds.afficher()
     # si la touche ESC est enfoncee, on sortira
     # au debut du prochain tour de boucle
     if touches[pygame.K_ESCAPE]:
-        continuer = 0
-    if main_menu == True:
+        game_paused = True
+
+    if main_menu:
         print("Main Menu")
-        if menuQuitButton.clicked == True:
+        if menuQuitButton.clicked:
             continuer = 0
-        if menuStartButton.clicked == True:
+        if menuStartButton.clicked:
             main_menu = False
             player_selection_menu = True
             fenetre.fill((0, 0, 0))
@@ -361,15 +367,15 @@ while continuer:
         menuQuitButton.afficher()
         pygame.display.flip()
 
-    elif player_selection_menu == True:
+    elif player_selection_menu:
         print("playerSelection")
         textePlayerMenu.afficher()
         ingameExitButton.afficher()
-        if ingameExitButton.clicked == True:
+        if ingameExitButton.clicked:
             continuer = 0
         for i in range(4):
             playerButtons[i].afficher()
-            if playerButtons[i].clicked == True:
+            if playerButtons[i].clicked:
                 defaultPlayer = i + 1
                 perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 80, 70)
                 player_selection_menu = False
@@ -377,9 +383,20 @@ while continuer:
                 pygame.display.flip()
         pygame.display.flip()
 
+    elif game_paused:
+        pauseText.afficher()
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_y:
+                    continuer = 0
+                    break
+                if event.key == pygame.K_n:
+                    game_paused = False
+
     else:
         if ingameExitButton.clicked == 1:
-            continuer = 0;
+            game_paused=True
         perso.deplacer()
 
         '''
