@@ -26,7 +26,6 @@ def lire_images():
     for i in range(10):
         imageBank["number_" + str(i)] = pygame.image.load(
             "Images/Animations/platformerGraphics_otherStyle/HUD/hud_" + str(i) + ".png").convert_alpha()
-        imageBank["number_" + str(i)] = pygame.transform.scale(imageBank["number_" + str(i)], (30, 30))
     playerSize = 48
     playerHeight = 64.59
     imageBank["player_4"] = {}
@@ -269,6 +268,11 @@ class Balle(ElementAnime):
         if self.rect.y < 0 or self.rect.y + self.rect.h > h:
             self.dy = -self.dy
 
+def createTimerElements(fenetre,time):
+    a=10
+    for d in str(time):
+        ElementGraphique(imageBank["number_"+d], fenetre, a, 10).afficher()
+        a=a+30
 
 # Initialisation de la bibliotheque pygame
 pygame.init()
@@ -361,7 +365,6 @@ while continuer:
         game_paused = True
 
     if main_menu:
-        print("Main Menu")
         if menuQuitButton.clicked:
             continuer = 0
         if menuStartButton.clicked:
@@ -373,10 +376,10 @@ while continuer:
         texte.afficher()
         menuStartButton.afficher()
         menuQuitButton.afficher()
+        print("numberdrawn")
         pygame.display.flip()
 
     elif player_selection_menu:
-        print("playerSelection")
         textePlayerMenu.afficher()
         ingameExitButton.afficher()
         if ingameExitButton.clicked:
@@ -451,9 +454,7 @@ while continuer:
 
         for e in mes_balles:
             e.afficher()
-
-        for i in range(3):
-            ElementGraphique(fenetre, imageBank["number_" + str(i)], 20 * (i + 1), 50).afficher()
+        createTimerElements(fenetre,playtimePerLvl)
         ingameExitButton.afficher()
         # rafraichissement
         pygame.display.flip()
