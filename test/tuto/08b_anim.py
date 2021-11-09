@@ -272,7 +272,7 @@ def createTimerElements(fenetre,time):
     a=10
     for d in str(time):
         ElementGraphique(imageBank["number_"+d], fenetre, a, 10).afficher()
-        a=a+30
+        a=a+33
 
 # Initialisation de la bibliotheque pygame
 pygame.init()
