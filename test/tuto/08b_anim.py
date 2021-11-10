@@ -352,7 +352,7 @@ game_paused = False
 end_screen = False
 display_blurryScreen = False
 defaultPlayer = 1
-playtimePerLvl = 3  # time in seconds
+playtimePerLvl = 300  # time in seconds
 timeConst = playtimePerLvl
 endScreenMessage = ElementGraphique(font.render("Try again?", True, (3, 45, 49)), fenetre, x=256, y=256)
 start_ticks = pygame.time.get_ticks()
