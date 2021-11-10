@@ -101,7 +101,8 @@ def lire_sounds():
     soundBank = {}
     soundBank["menu_music"] = pygame.mixer.Sound("Sounds/Menumusic.wav")
     soundBank["menu_music"].set_volume(0.25)
-
+    soundBank["button_click"] = pygame.mixer.Sound("Sounds/buttonClick.flac")
+    soundBank["button_click"].set_volume(0.3)
     return soundBank
 
 
@@ -165,6 +166,7 @@ class Button(ElementGraphique):
         if self.rect.collidepoint(pos):
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
+                soundBank["button_click"].play() #everytime a button is clicked this is the sound you will hear
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
@@ -380,7 +382,6 @@ while continuer:
         if menuQuitButton.clicked:
             continuer = 0
         if menuStartButton.clicked:
-            print("button clicked")
             main_menu = False
             player_selection_menu = True
             fenetre.fill((0, 0, 0))
