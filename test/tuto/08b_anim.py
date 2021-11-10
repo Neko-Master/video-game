@@ -348,8 +348,6 @@ maMap = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
-
-
 #hella variables for the game xD
 i = 1;
 continuer = 1
@@ -368,7 +366,7 @@ timerBuffer = 0
 #music stuff
 soundBank["menu_music"].play(10)
 lvlMusicPlaying=False
-pygame.mixer.music.load("Sounds/Backgroundmusic.ogg") #has to be done like this so you can puase/unpause
+pygame.mixer.music.load("Sounds/Backgroundmusic.ogg") #has to be done like this so you can pause/unpause
 pygame.mixer.music.set_volume(0.25)
 #start point of timer
 start_ticks = pygame.time.get_ticks()
@@ -376,13 +374,13 @@ while continuer:
     # fixons le nombre max de frames / secondes
     horloge.tick(30)
     i = i + 1
-    # print (i)
     if main_menu:
         for fonds in fondarr:
             fonds.afficher()
         if menuQuitButton.clicked:
             continuer = 0
         if menuStartButton.clicked:
+            print("button clicked")
             main_menu = False
             player_selection_menu = True
             fenetre.fill((0, 0, 0))
@@ -473,7 +471,7 @@ while continuer:
             game_paused = True
         secondsPassed = int(
             timerBuffer + (pygame.time.get_ticks() - start_ticks) / 1000)  # calculate how many seconds played
-        if secondsPassed >= timeConst:  # you have 5 min to reach the end
+        if secondsPassed >= timeConst:  # you have 300s to reach the end of the lvl
             end_screen = True
             endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre, x=300,
                                                 y=200)
@@ -520,5 +518,9 @@ while continuer:
         # rafraichissement
         pygame.display.flip()
 
+     #if we don't need to handle the events we use pump instead of the for-loop
+    pygame.event.pump()
+    #for event in pygame.event.get():  # parcours de la liste des evenements recus
+        #do stuff with events
 # fin du programme principal...
 pygame.quit()
