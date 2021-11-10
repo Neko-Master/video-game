@@ -19,7 +19,6 @@ def lire_images():
         "Images/Animations/platformerGraphics_otherStyle/bg_castle.png").convert_alpha()
     imageBank["mur"] = pygame.image.load("Images/mur.png").convert_alpha()
     imageBank["mur"] = pygame.transform.scale(imageBank["mur"], (64, 64))
-
     imageBank["flame"] = []
     for i in range(4):
         imageBank["flame"].append(pygame.image.load("Images/Animations/flameBall_" + str(i) + ".png").convert_alpha())
@@ -268,11 +267,13 @@ class Balle(ElementAnime):
         if self.rect.y < 0 or self.rect.y + self.rect.h > h:
             self.dy = -self.dy
 
-def createTimerElements(fenetre,time):
-    a=10
+
+def createTimerElements(fenetre, time):
+    a = 10
     for d in str(time):
-        ElementGraphique(imageBank["number_"+d], fenetre, a, 10).afficher()
-        a=a+33
+        ElementGraphique(imageBank["number_" + d], fenetre, a, 10).afficher()
+        a = a + 33
+
 
 # Initialisation de la bibliotheque pygame
 pygame.init()
@@ -321,6 +322,12 @@ textePlayerMenu = ElementGraphique(font.render('Choose Player by clicking on him
 pauseText = ElementGraphique(
     font.render("Quit game? Press 'Y'es to end it all or 'N'o to resume the fun", True, (3, 45, 49)), fenetre, x=75,
     y=100)
+
+blurryScreenImg = pygame.Surface((fenetre.get_size()))
+blurryScreenImg.fill((77, 77, 77))
+blurryScreenImg.set_alpha(111)
+blurrScreen = ElementGraphique(blurryScreenImg, fenetre)
+
 maMap = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [1, 0, 0, 0, 1, 0, 1, 0, 1, 1],
          [1, 0, 1, 1, 1, 0, 0, 0, 1, 1],
@@ -328,8 +335,7 @@ maMap = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
          [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
          [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
-         [1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
-         ]
+         [1, 1, 1, 1, 1, 1, 0, 1, 0, 1],]
 
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
@@ -342,6 +348,7 @@ continuer = 1
 main_menu = True
 player_selection_menu = False
 game_paused = False
+display_blurryScreen=False
 defaultPlayer = 1
 playtimePerLvl = 300
 start_ticks = pygame.time.get_ticks()
@@ -357,14 +364,14 @@ while continuer:
 
     # on recupere l'etat du clavier
     touches = pygame.key.get_pressed()
-    for fonds in fondarr:
-        fonds.afficher()
     # si la touche ESC est enfoncee, on sortira
     # au debut du prochain tour de boucle
     if touches[pygame.K_ESCAPE]:
         game_paused = True
 
     if main_menu:
+        for fonds in fondarr:
+            fonds.afficher()
         if menuQuitButton.clicked:
             continuer = 0
         if menuStartButton.clicked:
@@ -376,10 +383,11 @@ while continuer:
         texte.afficher()
         menuStartButton.afficher()
         menuQuitButton.afficher()
-        print("numberdrawn")
         pygame.display.flip()
 
     elif player_selection_menu:
+        for fonds in fondarr:
+            fonds.afficher()
         textePlayerMenu.afficher()
         ingameExitButton.afficher()
         if ingameExitButton.clicked:
@@ -397,6 +405,9 @@ while continuer:
 
     elif game_paused:
         timerBuffer = secondsPassed
+        if not display_blurryScreen:
+            blurrScreen.afficher()
+            display_blurryScreen=True
         pauseText.afficher()
         pygame.display.flip()
         for event in pygame.event.get():
@@ -406,9 +417,12 @@ while continuer:
                     break
                 if event.key == pygame.K_n:
                     game_paused = False
+                    display_blurryScreen = False
                     start_ticks = pygame.time.get_ticks()
 
     else:
+        for fonds in fondarr:
+            fonds.afficher()
         if ingameExitButton.clicked == 1:
             game_paused = True
         secondsPassed = int(
@@ -416,7 +430,6 @@ while continuer:
         if secondsPassed > 300:  # you have 5 min to reach the end
             continuer = 0
         playtimePerLvl = 300 - secondsPassed
-
         perso.deplacer()
 
         '''
@@ -454,9 +467,10 @@ while continuer:
 
         for e in mes_balles:
             e.afficher()
-        createTimerElements(fenetre,playtimePerLvl)
+        createTimerElements(fenetre, playtimePerLvl)
         ingameExitButton.afficher()
         # rafraichissement
+
         pygame.display.flip()
 
     # Si on a clique sur le bouton de fermeture on sortira
