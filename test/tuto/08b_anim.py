@@ -311,12 +311,13 @@ playerButtons.append(Button(pygame.image.load("Images/Animations/mc-right-0.png"
 ingameExitButton = Button(imageBank["exit_button"], fenetre, (256 * 3) - 53, 3)
 menuStartButton = Button(imageBank["start_button"], fenetre, 256 / 2, 256)
 menuQuitButton = Button(imageBank["quit_button"], fenetre, 256 * 2, 256)
-
+endScreenStartButton = Button(imageBank["start_button"], fenetre, 256 / 2, 256)
+endScreenQuitButton = Button(imageBank["quit_button"], fenetre, 256 * 2, 256)
 # Choix de la police pour le texte
 font = pygame.font.Font(None, 34)
 # Creation de l'image correspondant au texte
 texte = ElementGraphique(font.render('The platformer of Maximilian Amougou and Tony Mardivirin', True, (3, 45, 49)),
-                         fenetre, x=10, y=10)
+                         fenetre, x=50, y=200)
 textePlayerMenu = ElementGraphique(font.render('Choose Player by clicking on him:', True, (3, 45, 49)), fenetre, x=100,
                                    y=100)
 pauseText = ElementGraphique(
@@ -335,7 +336,7 @@ maMap = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
          [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
          [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
-         [1, 1, 1, 1, 1, 1, 0, 1, 0, 1],]
+         [1, 1, 1, 1, 1, 1, 0, 1, 0, 1], ]
 
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
@@ -348,27 +349,20 @@ continuer = 1
 main_menu = True
 player_selection_menu = False
 game_paused = False
-display_blurryScreen=False
+end_screen = False
+display_blurryScreen = False
 defaultPlayer = 1
-playtimePerLvl = 300
+playtimePerLvl = 3  # time in seconds
+timeConst = playtimePerLvl
+endScreenMessage = ElementGraphique(font.render("Try again?", True, (3, 45, 49)), fenetre, x=256, y=256)
 start_ticks = pygame.time.get_ticks()
 secondsPassed = 0
 timerBuffer = 0
 while continuer:
-
     # fixons le nombre max de frames / secondes
     horloge.tick(30)
-
     i = i + 1
     # print (i)
-
-    # on recupere l'etat du clavier
-    touches = pygame.key.get_pressed()
-    # si la touche ESC est enfoncee, on sortira
-    # au debut du prochain tour de boucle
-    if touches[pygame.K_ESCAPE]:
-        game_paused = True
-
     if main_menu:
         for fonds in fondarr:
             fonds.afficher()
@@ -407,7 +401,7 @@ while continuer:
         timerBuffer = secondsPassed
         if not display_blurryScreen:
             blurrScreen.afficher()
-            display_blurryScreen=True
+            display_blurryScreen = True
         pauseText.afficher()
         pygame.display.flip()
         for event in pygame.event.get():
@@ -420,16 +414,44 @@ while continuer:
                     display_blurryScreen = False
                     start_ticks = pygame.time.get_ticks()
 
+    elif end_screen:
+        touches = pygame.key.get_pressed()
+        if touches[pygame.K_ESCAPE]:
+            continuer = 0
+        for fonds in fondarr:
+            fonds.afficher()
+        if endScreenQuitButton.clicked:
+            continuer = 0
+        if endScreenStartButton.clicked:  # reset time and stats here
+            end_screen = False
+            playtimePerLvl = timeConst
+            start_ticks = pygame.time.get_ticks()
+            secondsPassed = 0
+            timerBuffer = 0
+
+        endScreenMessage.afficher()
+        endScreenStartButton.afficher()
+        endScreenQuitButton.afficher()
+        pygame.display.flip()
+
     else:
+        # on recupere l'etat du clavier
+        touches = pygame.key.get_pressed()
+        # si la touche ESC est enfoncee, on sortira
+        # au debut du prochain tour de boucle
+        if touches[pygame.K_ESCAPE]:
+            game_paused = True
         for fonds in fondarr:
             fonds.afficher()
         if ingameExitButton.clicked == 1:
             game_paused = True
         secondsPassed = int(
             timerBuffer + (pygame.time.get_ticks() - start_ticks) / 1000)  # calculate how many seconds played
-        if secondsPassed > 300:  # you have 5 min to reach the end
-            continuer = 0
-        playtimePerLvl = 300 - secondsPassed
+        if secondsPassed >= timeConst:  # you have 5 min to reach the end
+            end_screen = True
+            endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre, x=300,
+                                                y=200)
+        playtimePerLvl = timeConst - secondsPassed
         perso.deplacer()
 
         '''
