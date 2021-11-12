@@ -14,6 +14,16 @@ def lire_images():
     imageBank["start_button"] = pygame.image.load("Images/start_button.png")
     imageBank["quit_button"] = pygame.image.load("Images/quit_button.png")
     imageBank["balle"] = pygame.image.load("Images/balle.png").convert_alpha()
+    imageBank["heart_full"] = pygame.image.load(
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_heartFull.png").convert_alpha()
+    imageBank["heart_empty"] = pygame.image.load(
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_heartEmpty.png").convert_alpha()
+    imageBank["hud_gem_green"] = pygame.transform.scale(pygame.image.load(
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_gem_green.png").convert_alpha(), (30, 23.478))
+    imageBank["hud_gem_blue"] = pygame.transform.scale(pygame.image.load(
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_gem_blue.png").convert_alpha(), (30, 23.478))
+    imageBank["x_sign"] = pygame.transform.scale(pygame.image.load(
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_x.png").convert_alpha(), (18, 16.8))
     imageBank["fond"] = pygame.image.load(
         "Images/Animations/platformerGraphics_otherStyle/bg_castle.png").convert_alpha()
     imageBank["mur"] = pygame.image.load("Images/mur.png").convert_alpha()
@@ -24,76 +34,83 @@ def lire_images():
     for i in range(10):
         imageBank["number_" + str(i)] = pygame.image.load(
             "Images/Animations/platformerGraphics_otherStyle/HUD/hud_" + str(i) + ".png").convert_alpha()
-    playerSize = 48
-    playerHeight = 64.59
+    # smaller numbers
+    for i in range(10):
+        image = pygame.image.load(
+            "Images/Animations/platformerGraphics_otherStyle/HUD/hud_" + str(i) + ".png")
+        imageBank["small_number_" + str(i)] = pygame.transform.scale(image.convert_alpha(),
+                                                                     (image.get_width() * 0.65,
+                                                                      image.get_height() * 0.65))
+    playerWidth = 48
+    playerHeight = 48
     imageBank["player_4"] = {}
     imageBank["player_4"]["droite"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-right-" + str(i) + ".png").convert_alpha()
-        image = pygame.transform.scale(image, (playerSize, playerSize))
+        image = pygame.transform.scale(image, (playerWidth, playerHeight))
         imageBank["player_4"]["droite"].append(image)
 
     imageBank["player_4"]["gauche"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-left-" + str(i) + ".png").convert_alpha()
-        image = pygame.transform.scale(image, (playerSize, playerSize))
+        image = pygame.transform.scale(image, (playerWidth, playerWidth))
         imageBank["player_4"]["gauche"].append(image)
 
     imageBank["player_4"]["haut"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-up-" + str(i) + ".png").convert_alpha()
-        image = pygame.transform.scale(image, (playerSize, playerSize))
+        image = pygame.transform.scale(image, (playerWidth, playerWidth))
         imageBank["player_4"]["haut"].append(image)
 
     imageBank["player_4"]["bas"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-down-" + str(i) + ".png").convert_alpha()
-        image = pygame.transform.scale(image, (playerSize, playerSize))
+        image = pygame.transform.scale(image, (playerWidth, playerWidth))
         imageBank["player_4"]["bas"].append(image)
 
-        # create 3 players you can choose from
-        for i in range(3):
-            imageBank["player_" + str(i + 1)] = {}
-            # right
-            imageBank["player_" + str(i + 1)]["droite"] = []
-            for j in range(11):
-                if int(j) < 9:
-                    imageBank["player_" + str(i + 1)]["droite"].append(pygame.transform.scale(pygame.image.load(
-                        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
-                            i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(), (playerSize, playerHeight)))
-                else:
-                    imageBank["player_" + str(i + 1)]["droite"].append(pygame.transform.scale(pygame.image.load(
-                        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
-                            i + 1) + "_walk" + str(j + 1) + ".png").convert_alpha(), (playerSize, playerHeight)))
-            # left
-            imageBank["player_" + str(i + 1)]["gauche"] = []
-            for j in range(11):
-                if int(j) < 9:
-                    imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
-                        pygame.image.load(
-                            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(
-                                i + 1) + "_walk/PNG/p" + str(
-                                i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(), True, False),
-                        (playerSize, playerHeight)))
-                else:
-                    imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
-                        pygame.image.load(
-                            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(
-                                i + 1) + "_walk/PNG/p" + str(
-                                i + 1) + "_walk" + str(j + 1) + ".png"), True, False).convert_alpha(),
-                                                                                              (playerSize,
-                                                                                               playerHeight)))
-            # up
-            imageBank["player_" + str(i + 1)]["haut"] = []
-            imageBank["player_" + str(i + 1)]["haut"].append(pygame.transform.scale(pygame.image.load(
-                "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_jump.png").convert_alpha(),
-                                                                                    (playerSize, playerHeight)))
-            # down
-            imageBank["player_" + str(i + 1)]["bas"] = []
-            imageBank["player_" + str(i + 1)]["bas"].append(pygame.transform.scale(pygame.image.load(
-                "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_duck.png").convert_alpha(),
-                                                                                   (playerSize, playerHeight)))
-
+    # create 3 players you can choose from
+    playerWidth = 35.664
+    for i in range(3):
+        imageBank["player_" + str(i + 1)] = {}
+        # right
+        imageBank["player_" + str(i + 1)]["droite"] = []
+        for j in range(11):
+            if int(j) < 9:
+                imageBank["player_" + str(i + 1)]["droite"].append(pygame.transform.scale(pygame.image.load(
+                    "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
+                        i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(), (playerWidth, playerHeight)))
+            else:
+                imageBank["player_" + str(i + 1)]["droite"].append(pygame.transform.scale(pygame.image.load(
+                    "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
+                        i + 1) + "_walk" + str(j + 1) + ".png").convert_alpha(), (playerWidth, playerHeight)))
+        # left
+        imageBank["player_" + str(i + 1)]["gauche"] = []
+        for j in range(11):
+            if int(j) < 9:
+                imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
+                    pygame.image.load(
+                        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(
+                            i + 1) + "_walk/PNG/p" + str(
+                            i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(), True, False),
+                    (playerWidth, playerHeight)))
+            else:
+                imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
+                    pygame.image.load(
+                        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(
+                            i + 1) + "_walk/PNG/p" + str(
+                            i + 1) + "_walk" + str(j + 1) + ".png"), True, False).convert_alpha(),
+                                                                                          (playerWidth,
+                                                                                           playerHeight)))
+        # up
+        imageBank["player_" + str(i + 1)]["haut"] = []
+        imageBank["player_" + str(i + 1)]["haut"].append(pygame.transform.scale(pygame.image.load(
+            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_jump.png").convert_alpha(),
+                                                                                (playerWidth, playerHeight)))
+        # down
+        imageBank["player_" + str(i + 1)]["bas"] = []
+        imageBank["player_" + str(i + 1)]["bas"].append(pygame.transform.scale(pygame.image.load(
+            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_duck.png").convert_alpha(),
+                                                                               (playerWidth, playerHeight)))
     return imageBank
 
 
@@ -166,7 +183,7 @@ class Button(ElementGraphique):
         if self.rect.collidepoint(pos):
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
-                soundBank["button_click"].play() #everytime a button is clicked this is the sound you will hear
+                soundBank["button_click"].play()  # everytime a button is clicked this is the sound you will hear
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
@@ -222,7 +239,7 @@ class Joueur(ElementAnimeDir):
 
     def deplacer(self):
         # on recupere l'etat du clavier
-        touches = pygame.key.get_pressed();
+        touches = pygame.key.get_pressed()
 
         new_rect = copy.deepcopy(self.rect)
 
@@ -281,11 +298,34 @@ def createTimerElements(fenetre, time):
     a = 10
     for d in str(time):
         ElementGraphique(imageBank["number_" + d], fenetre, a, 10).afficher()
-        a = a + 33
+        a = a + imageBank["number_" + d].get_width() + 2
 
 
-pygame.init() # Initialisation de la bibliotheque pygame
-pygame.mixer.init() # initialize for sound
+# show how many lives you have
+def live_display(fenetre, lives):
+    a = 300
+    # display lives i have
+    for i in range(lives):
+        ElementGraphique(imageBank["heart_full"], fenetre, a, 10).afficher()
+        a = a + imageBank["heart_full"].get_width() + 2
+    # display empty hearts ive lost
+    for i in range(3 - lives):
+        ElementGraphique(imageBank["heart_empty"], fenetre, a, 10).afficher()
+        a = a + imageBank["heart_full"].get_width() + 2
+
+
+def gem_display(fenetre, gem_count):
+    ElementGraphique(imageBank["hud_gem_blue"], fenetre, 10, 53).afficher()
+    ElementGraphique(imageBank["x_sign"], fenetre, 12 + imageBank["hud_gem_blue"].get_width(), 57).afficher()
+    # startpos of the numbers
+    a = 14 + imageBank["hud_gem_blue"].get_width() + imageBank["x_sign"].get_width()
+    for d in str(gem_count):
+        ElementGraphique(imageBank["small_number_" + d], fenetre, a, 53).afficher()
+        a = a + imageBank["small_number_" + d].get_width() + 1
+
+
+pygame.init()  # Initialisation de la bibliotheque pygame
+pygame.mixer.init()  # initialize for sound
 # creation de la fenetre
 largeur = 256 * 3
 hauteur = 256 * 3
@@ -308,13 +348,10 @@ fondarr = []
 for j in range(3):
     for i in range(3):
         fondarr.append(ElementGraphique(imageBank["fond"], fenetre, j * 256, 256 * i))
-#Create the buttons for the game
+# Create the buttons for the game
 playerButtons = []
-for i in range(3):
-    playerButtons.append(Button(pygame.image.load(
-        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
-            i + 1) + "_walk01.png"),
-        fenetre, 100 * (i + 1), 256 / 2))
+for i in range(4):
+    playerButtons.append(Button(imageBank["player_" + str(i + 1)]["droite"][0], fenetre, 100 * (i + 1), 256 / 2))
 playerButtons.append(Button(pygame.image.load("Images/Animations/mc-right-0.png"), fenetre, 400, 256 / 2))
 ingameExitButton = Button(imageBank["exit_button"], fenetre, (256 * 3) - 53, 3)
 menuStartButton = Button(imageBank["start_button"], fenetre, 256 / 2, 256)
@@ -333,7 +370,7 @@ pauseText = ElementGraphique(
     y=100)
 endScreenMessage = ElementGraphique(font.render("Try again?", True, (3, 45, 49)), fenetre, x=256, y=256)
 
-#draw this over screen to make it blurry
+# draw this over screen to make it blurry
 blurryScreenImg = pygame.Surface((fenetre.get_size()))
 blurryScreenImg.fill((77, 77, 77))
 blurryScreenImg.set_alpha(111)
@@ -350,7 +387,7 @@ maMap = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
-#hella variables for the game xD
+# hella variables for the game xD
 i = 1;
 continuer = 1
 # the menus
@@ -360,17 +397,20 @@ game_paused = False
 end_screen = False
 display_blurryScreen = False
 defaultPlayer = 1
-#timer stuff
+# Ingame variables
+player_lives = 3
+player_gems = 0
+# timer stuff
 playtimePerLvl = 300  # time in seconds
 timeConst = playtimePerLvl
 secondsPassed = 0
 timerBuffer = 0
-#music stuff
+# music stuff
 soundBank["menu_music"].play(10)
-lvlMusicPlaying=False
-pygame.mixer.music.load("Sounds/Backgroundmusic.ogg") #has to be done like this so you can pause/unpause
+lvlMusicPlaying = False
+pygame.mixer.music.load("Sounds/Backgroundmusic.ogg")  # has to be done like this so you can pause/unpause
 pygame.mixer.music.set_volume(0.25)
-#start point of timer
+# start point of timer
 start_ticks = pygame.time.get_ticks()
 while continuer:
     # fixons le nombre max de frames / secondes
@@ -399,7 +439,7 @@ while continuer:
         ingameExitButton.afficher()
         if ingameExitButton.clicked:
             continuer = 0
-        #generate the clickable players
+        # generate the clickable players
         for i in range(4):
             playerButtons[i].afficher()
             if playerButtons[i].clicked:
@@ -412,7 +452,7 @@ while continuer:
         pygame.display.flip()
 
     elif game_paused:
-        #stop the timer while game is paused
+        # stop the timer while game is paused
         timerBuffer = secondsPassed
         if not display_blurryScreen:
             blurrScreen.afficher()
@@ -458,12 +498,9 @@ while continuer:
     else:
         soundBank["menu_music"].stop()
         if not lvlMusicPlaying:
-            lvlMusicPlaying=True
+            lvlMusicPlaying = True
             pygame.mixer.music.play(10)
-        # on recupere l'etat du clavier
         touches = pygame.key.get_pressed()
-        # si la touche ESC est enfoncee, on sortira
-        # au debut du prochain tour de boucle
         if touches[pygame.K_ESCAPE]:
             game_paused = True
         for fonds in fondarr:
@@ -477,6 +514,10 @@ while continuer:
             endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre, x=300,
                                                 y=200)
         playtimePerLvl = timeConst - secondsPassed
+        if player_lives < 0:
+            end_screen = True
+            endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre, x=300,
+                                                y=200)
         perso.deplacer()
 
         '''
@@ -515,13 +556,15 @@ while continuer:
         for e in mes_balles:
             e.afficher()
         createTimerElements(fenetre, playtimePerLvl)
+        live_display(fenetre, player_lives)
+        gem_display(fenetre, player_gems)
         ingameExitButton.afficher()
         # rafraichissement
         pygame.display.flip()
 
-     #if we don't need to handle the events we use pump instead of the for-loop
+    # if we don't need to handle the events we use pump instead of the for-loop
     pygame.event.pump()
-    #for event in pygame.event.get():  # parcours de la liste des evenements recus
-        #do stuff with events
+    # for event in pygame.event.get():  # parcours de la liste des evenements recus
+    # do stuff with events
 # fin du programme principal...
 pygame.quit()
