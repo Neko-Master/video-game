@@ -420,22 +420,27 @@ for j in range(6):
 # Create the buttons for the game
 playerButtons = []
 for i in range(4):
-    playerButtons.append(Button(imageBank["player_"+str(i+1)]["droite"][0], fenetre, 100 * (i + 1), 256 / 2))
-ingameExitButton = Button(imageBank["exit_button"], fenetre, (256 * 3) - 53, 3)
-menuStartButton = Button(imageBank["start_button"], fenetre, 256 / 2, 256)
-menuQuitButton = Button(imageBank["quit_button"], fenetre, 256 * 2, 256)
-endScreenStartButton = Button(imageBank["start_button"], fenetre, 256 / 2, 256)
-endScreenQuitButton = Button(imageBank["quit_button"], fenetre, 256 * 2, 256)
+    playerButtons.append(Button(imageBank["player_" + str(i + 1)]["droite"][0], fenetre, fenetre.get_rect().centerx-175+(100 * (i)), fenetre.get_rect().centery-100))
+ingameExitButton = Button(imageBank["exit_button"], fenetre,
+                          fenetre.get_width() - imageBank["exit_button"].get_width() - 3, 3)
+menuStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_rect().centerx - 150,
+                         fenetre.get_rect().centery - 100)
+menuQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
+                        fenetre.get_rect().centery - 100)
+endScreenStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_rect().centerx - 150,
+                              fenetre.get_rect().centery - 100)
+endScreenQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
+                             fenetre.get_rect().centery - 100)
 # Choix de la police pour le texte
 font = pygame.font.Font(None, 34)
 # Text to display
 texte = ElementGraphique(font.render('The platformer of Maximilian Amougou and Tony Mardivirin', True, (3, 45, 49)),
-                         fenetre, x=50, y=200)
-textePlayerMenu = ElementGraphique(font.render('Choose Player by clicking on him:', True, (3, 45, 49)), fenetre, x=100,
-                                   y=100)
+                         fenetre, x=fenetre.get_rect().centerx - 300, y=fenetre.get_rect().centery - 200)
+textePlayerMenu = ElementGraphique(font.render('Choose Player by clicking on him:', True, (3, 45, 49)), fenetre,
+                                   x=fenetre.get_rect().centerx - 200, y=fenetre.get_rect().centery - 200)
 pauseText = ElementGraphique(
-    font.render("Quit game? Press 'Y'es to end it all or 'N'o to resume the fun", True, (3, 45, 49)), fenetre, x=75,
-    y=100)
+    font.render("Quit game? Press 'Y'es to end it all or 'N'o to resume the fun", True, (3, 45, 49)), fenetre, x=fenetre.get_rect().centerx-300,
+    y=fenetre.get_rect().centery)
 endScreenMessage = ElementGraphique(font.render("Try again?", True, (3, 45, 49)), fenetre, x=256, y=256)
 
 # draw this over screen to make it blurry
@@ -457,10 +462,11 @@ maMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
          [0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0, 0],  # 11
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0],  # 12
          [2, 3, 4, 0, 0, 0, 0, 2, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 3, 3, 3, 4],  # 13
-         [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],]  # 14
+         [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], ]  # 14
+
 
 def maxisLvl():
-    continuer=True
+    continuer = True
     horologeMaxi = pygame.time.Clock()
     while continuer:
         horologeMaxi.tick(30)
@@ -468,7 +474,8 @@ def maxisLvl():
             fonds.afficher()
         pygame.display.flip()
         pygame.time.wait(5000)
-        continuer=False
+        continuer = False
+
 
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
@@ -508,8 +515,8 @@ soundBank["menu_music"].play(10)
 lvlMusicPlaying = False
 pygame.mixer.music.load("Sounds/Backgroundmusic.ogg")  # has to be done like this so you can pause/unpause
 pygame.mixer.music.set_volume(0.25)
-#lvlChoice
-lvlMaxi=False
+# lvlChoice
+lvlMaxi = False
 # start point of timer
 start_ticks = pygame.time.get_ticks()
 while continuer:
@@ -546,7 +553,7 @@ while continuer:
                 defaultPlayer = i + 1
                 perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 80, 70)
                 player_selection_menu = False
-                #lvlMaxi=True
+                # lvlMaxi=True
                 fenetre.fill((0, 0, 0))
                 start_ticks = pygame.time.get_ticks()
                 pygame.display.flip()
@@ -598,7 +605,7 @@ while continuer:
     # TODO create methods for the levels and call them instaed of everything in this loop
     elif lvlMaxi:
         maxisLvl()
-        lvlMaxi=False
+        lvlMaxi = False
     else:
         soundBank["menu_music"].stop()
         if not lvlMusicPlaying:
