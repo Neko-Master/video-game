@@ -26,14 +26,15 @@ def lire_images():
         "Images/Animations/platformerGraphics_otherStyle/HUD/hud_gem_blue.png").convert_alpha(), (30, 23.478))
     imageBank["x_sign"] = pygame.transform.scale(pygame.image.load(
         "Images/Animations/platformerGraphics_otherStyle/HUD/hud_x.png").convert_alpha(), (18, 16.8))
-    imageBank["sol"]= pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfMid.png")
-    imageBank["sol"]= pygame.transform.scale(imageBank["sol"],(50,50))
-    imageBank["solleft"]= pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfLeft.png")
-    imageBank["solleft"]= pygame.transform.scale(imageBank["solleft"],(50,50))
-    imageBank["solright"]= pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfRight.png")
-    imageBank["solright"]= pygame.transform.scale(imageBank["solright"],(50,50))
-    imageBank["dirt"]= pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassCenter.png")
-    imageBank["dirt"]= pygame.transform.scale(imageBank["dirt"],(50,50))
+    imageBank["sol"] = pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfMid.png")
+    imageBank["sol"] = pygame.transform.scale(imageBank["sol"], (50, 50))
+    imageBank["solleft"] = pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfLeft.png")
+    imageBank["solleft"] = pygame.transform.scale(imageBank["solleft"], (50, 50))
+    imageBank["solright"] = pygame.image.load(
+        "Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfRight.png")
+    imageBank["solright"] = pygame.transform.scale(imageBank["solright"], (50, 50))
+    imageBank["dirt"] = pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassCenter.png")
+    imageBank["dirt"] = pygame.transform.scale(imageBank["dirt"], (50, 50))
 
     imageBank["sol"] = pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfMid.png")
     imageBank["sol"] = pygame.transform.scale(imageBank["sol"], (50, 50))
@@ -80,63 +81,63 @@ def lire_images():
     imageBank["player_4"]["gauche"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-left-" + str(i) + ".png").convert_alpha()
-        image = pygame.transform.scale(image, (playerSize, playerSize))
+        image = pygame.transform.scale(image, (playerWidth, playerHeight))
         imageBank["player_4"]["gauche"].append(image)
 
     imageBank["player_4"]["haut"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-up-" + str(i) + ".png").convert_alpha()
-        image = pygame.transform.scale(image, (playerSize, playerSize))
+        image = pygame.transform.scale(image, (playerWidth, playerHeight))
         imageBank["player_4"]["haut"].append(image)
 
     imageBank["player_4"]["bas"] = []
     for i in range(3):
         image = pygame.image.load("Images/Animations/mc-down-" + str(i) + ".png").convert_alpha()
-        image = pygame.transform.scale(image, (playerSize, playerSize))
+        image = pygame.transform.scale(image, (playerWidth, playerHeight))
         imageBank["player_4"]["bas"].append(image)
 
-        # create 3 players you can choose from
-        for i in range(3):
-            imageBank["player_" + str(i + 1)] = {}
-            # right
-            imageBank["player_" + str(i + 1)]["droite"] = []
-            for j in range(11):
-                if int(j) < 9:
-                    imageBank["player_" + str(i + 1)]["droite"].append(pygame.transform.scale(pygame.image.load(
-                        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
-                            i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(), (playerSize, playerHeight)))
-                else:
-                    imageBank["player_" + str(i + 1)]["droite"].append(pygame.transform.scale(pygame.image.load(
-                        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
-                            i + 1) + "_walk" + str(j + 1) + ".png").convert_alpha(), (playerSize, playerHeight)))
-            # left
-            imageBank["player_" + str(i + 1)]["gauche"] = []
-            for j in range(11):
-                if int(j) < 9:
-                    imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
-                        pygame.image.load(
-                            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(
-                                i + 1) + "_walk/PNG/p" + str(
-                                i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(), True, False),
-                        (playerSize, playerHeight)))
-                else:
-                    imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
-                        pygame.image.load(
-                            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(
-                                i + 1) + "_walk/PNG/p" + str(
-                                i + 1) + "_walk" + str(j + 1) + ".png"), True, False).convert_alpha(),
-                                                                                              (playerSize,
-                                                                                               playerHeight)))
-            # up
-            imageBank["player_" + str(i + 1)]["haut"] = []
-            imageBank["player_" + str(i + 1)]["haut"].append(pygame.transform.scale(pygame.image.load(
-                "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_jump.png").convert_alpha(),
-                                                                                    (playerSize, playerHeight)))
-            # down
-            imageBank["player_" + str(i + 1)]["bas"] = []
-            imageBank["player_" + str(i + 1)]["bas"].append(pygame.transform.scale(pygame.image.load(
-                "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_duck.png").convert_alpha(),
-                                                                                   (playerSize, playerHeight)))
+    # create 3 players you can choose from
+    playerWidth = 36.664
+    for i in range(3):
+        imageBank["player_" + str(i + 1)] = {}
+        # right
+        imageBank["player_" + str(i + 1)]["droite"] = []
+        for j in range(11):
+            if int(j) < 9:
+                imageBank["player_" + str(i + 1)]["droite"].append(pygame.transform.scale(pygame.image.load(
+                    "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
+                        i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(), (playerWidth, playerHeight)))
+            else:
+                imageBank["player_" + str(i + 1)]["droite"].append(pygame.transform.scale(pygame.image.load(
+                    "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
+                        i + 1) + "_walk" + str(j + 1) + ".png").convert_alpha(), (playerWidth, playerHeight)))
+        # left
+        imageBank["player_" + str(i + 1)]["gauche"] = []
+        for j in range(11):
+            if int(j) < 9:
+                imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
+                    pygame.image.load(
+                        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(
+                            i + 1) + "_walk/PNG/p" + str(
+                            i + 1) + "_walk0" + str(j + 1) + ".png").convert_alpha(), True, False),
+                    (playerWidth, playerHeight)))
+            else:
+                imageBank["player_" + str(i + 1)]["gauche"].append(pygame.transform.scale(pygame.transform.flip(
+                    pygame.image.load(
+                        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(
+                            i + 1) + "_walk/PNG/p" + str(
+                            i + 1) + "_walk" + str(j + 1) + ".png"), True, False).convert_alpha(),
+                                                                                          (playerWidth, playerHeight)))
+        # up
+        imageBank["player_" + str(i + 1)]["haut"] = []
+        imageBank["player_" + str(i + 1)]["haut"].append(pygame.transform.scale(pygame.image.load(
+            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_jump.png").convert_alpha(),
+                                                                                (playerWidth, playerHeight)))
+        # down
+        imageBank["player_" + str(i + 1)]["bas"] = []
+        imageBank["player_" + str(i + 1)]["bas"].append(pygame.transform.scale(pygame.image.load(
+            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_duck.png").convert_alpha(),
+                                                                               (playerWidth, playerHeight)))
 
     return imageBank
 
@@ -179,7 +180,6 @@ def afficher_map(maMap, imageBank):
             if maMap[i][j] == 5:
                 mur = ElementGraphique(imageBank["dirt"], fenetre, x=50 * j, y=50 * i)
                 mur.afficher()
-
 
 
 def collide_map(maMap, un_rect):
@@ -240,10 +240,10 @@ class Button(ElementGraphique):
 
 class ElementAnime(ElementGraphique):
     # images est un tableau des images de l'animation
-    def __init__(self, images, fen, x=0, y=0):
+    def __init__(self, images, fen, x=0, y=0, delai=1):
         super().__init__(images[0], fen, x, y)
         self.images = images
-        self.delai = 10
+        self.delai = delai
         self.num_image = 0
         self.timer = 0
 
@@ -377,8 +377,8 @@ def display_hud(fenetre, lives, gem_count, coin_count, time):
         a = a + imageBank["small_number_" + d].get_width() + 1
 
 
-pygame.init() # Initialisation de la bibliotheque pygame
-pygame.mixer.init() # initialize for sound
+pygame.init()  # Initialisation de la bibliotheque pygame
+pygame.mixer.init()  # initialize for sound
 # creation de la fenetre
 largeur = 1450
 hauteur = 700
@@ -417,14 +417,10 @@ fondarr = []
 for j in range(3):
     for i in range(3):
         fondarr.append(ElementGraphique(imageBank["fond"], fenetre, j * 256, 256 * i))
-#Create the buttons for the game
+# Create the buttons for the game
 playerButtons = []
-for i in range(3):
-    playerButtons.append(Button(pygame.image.load(
-        "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_walk/PNG/p" + str(
-            i + 1) + "_walk01.png"),
-        fenetre, 100 * (i + 1), 256 / 2))
-playerButtons.append(Button(pygame.image.load("Images/Animations/mc-right-0.png"), fenetre, 400, 256 / 2))
+for i in range(4):
+    playerButtons.append(Button(imageBank["player_"+str(i+1)]["droite"][0], fenetre, 100 * (i + 1), 256 / 2))
 ingameExitButton = Button(imageBank["exit_button"], fenetre, (256 * 3) - 53, 3)
 menuStartButton = Button(imageBank["start_button"], fenetre, 256 / 2, 256)
 menuQuitButton = Button(imageBank["quit_button"], fenetre, 256 * 2, 256)
@@ -442,46 +438,46 @@ pauseText = ElementGraphique(
     y=100)
 endScreenMessage = ElementGraphique(font.render("Try again?", True, (3, 45, 49)), fenetre, x=256, y=256)
 
-#draw this over screen to make it blurry
+# draw this over screen to make it blurry
 blurryScreenImg = pygame.Surface((fenetre.get_size()))
 blurryScreenImg.fill((77, 77, 77))
 blurryScreenImg.set_alpha(111)
 blurrScreen = ElementGraphique(blurryScreenImg, fenetre)
-        # 1 2 3 4 5 6 7 8 9 1*1 2 3 4 5 6 7 8 9 2*1 2 3 4 5 6 7 8 9 3*
-maMap = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#1
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#2
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#3
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#4
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#5
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#6
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#7
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0],#8
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#9
-         [0,0,0,0,0,0,0,0,0,0,2,3,3,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#10
-         [0,0,0,2,3,3,4,0,0,0,5,5,5,5,0,0,0,0,0,0,0,2,3,3,3,4,0,0,0,0],#11
-         [0,0,0,0,0,0,0,0,0,0,5,5,5,5,0,0,0,0,0,0,0,5,5,5,5,5,0,0,0,0],#12
-         [2,3,4,0,0,0,0,2,3,3,5,5,5,5,3,3,3,3,3,3,3,5,5,5,5,5,3,3,3,4],#13
-         [5,5,5,0,0,0,0,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],#14
+# 1 2 3 4 5 6 7 8 9 1*1 2 3 4 5 6 7 8 9 2*1 2 3 4 5 6 7 8 9 3*
+maMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 9
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
+         [0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0, 0],  # 11
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0],  # 12
+         [2, 3, 4, 0, 0, 0, 0, 2, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 3, 3, 3, 4],  # 13
+         [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],  # 14
          ]
 
-maMap = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#1
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#2
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#3
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#4
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#5
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#6
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#7
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0],#8
-         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#9
-         [0,0,0,0,0,0,0,0,0,0,2,3,3,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#10
-         [0,0,0,2,3,3,4,0,0,0,5,5,5,5,0,0,0,0,0,0,0,2,3,3,3,4,0,0,0,0],#11
-         [0,0,0,0,0,0,0,0,0,0,5,5,5,5,0,0,0,0,0,0,0,5,5,5,5,5,0,0,0,0],#12
-         [2,3,4,0,0,0,0,2,3,3,5,5,5,5,3,3,3,3,3,3,3,5,5,5,5,5,3,3,3,4],#13
-         [5,5,5,0,0,0,0,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],#14
+maMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 9
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
+         [0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0, 0],  # 11
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0],  # 12
+         [2, 3, 4, 0, 0, 0, 0, 2, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 3, 3, 3, 4],  # 13
+         [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],  # 14
          ]
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
-#hella variables for the game xD
+# hella variables for the game xD
 i = 1;
 continuer = 1
 # the menus
@@ -504,7 +500,7 @@ for i in range(10):
 for i in range(10):
     posX = random.randint(20, 750)
     posY = random.randint(20, 750)
-    imgArr=[]
+    imgArr = []
     imgArr.append(imageBank["blue_gem"])
     gemArr.append(collectable(imgArr, soundBank["gem"], fenetre, posX, posY))
 # timer stuff
@@ -512,12 +508,12 @@ playtimePerLvl = 300  # time in seconds
 timeConst = playtimePerLvl
 secondsPassed = 0
 timerBuffer = 0
-#music stuff
+# music stuff
 soundBank["menu_music"].play(10)
-lvlMusicPlaying=False
-pygame.mixer.music.load("Sounds/Backgroundmusic.ogg") #has to be done like this so you can pause/unpause
+lvlMusicPlaying = False
+pygame.mixer.music.load("Sounds/Backgroundmusic.ogg")  # has to be done like this so you can pause/unpause
 pygame.mixer.music.set_volume(0.25)
-#start point of timer
+# start point of timer
 start_ticks = pygame.time.get_ticks()
 while continuer:
     # fixons le nombre max de frames / secondes
