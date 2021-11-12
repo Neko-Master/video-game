@@ -14,6 +14,8 @@ def lire_images():
     imageBank["start_button"] = pygame.image.load("Images/start_button.png")
     imageBank["quit_button"] = pygame.image.load("Images/quit_button.png")
     imageBank["balle"] = pygame.image.load("Images/balle.png").convert_alpha()
+    imageBank["blue_gem"] = pygame.image.load(
+        "Images/Animations/platformerGraphics_otherStyle/Items/gemBlue.png").convert_alpha()
     imageBank["heart_full"] = pygame.image.load(
         "Images/Animations/platformerGraphics_otherStyle/HUD/hud_heartFull.png").convert_alpha()
     imageBank["heart_empty"] = pygame.image.load(
@@ -128,6 +130,8 @@ def lire_sounds():
     soundBank["button_click"].set_volume(0.3)
     soundBank["coin"] = pygame.mixer.Sound("Sounds/coin.wav")
     soundBank["coin"].set_volume(0.1)
+    soundBank["gem"] = pygame.mixer.Sound("Sounds/gem.wav")
+    soundBank["gem"].set_volume(0.1)
     return soundBank
 
 
@@ -352,17 +356,18 @@ soundBank = lire_sounds()
 perso = Joueur(imageBank["player_2"], fenetre, 80, 70)
 
 
-class spinningCoin(ElementAnime):
-    def __init__(self, images, fen, x=0, y=0, delai=3):
+class collectable(ElementAnime):
+    def __init__(self, images, collect_sound, fen, x=0, y=0, delai=3):
         super().__init__(images, fen, x, y, delai)
         self.collected = False
+        self.collect_sound = collect_sound
 
     def afficher(self):
         playerpos = perso.rect  # playerpos
         # collisioncheck with player
         if self.rect.colliderect(playerpos) and not self.collected:
             self.collected = True
-            soundBank["coin"].play()  # everytime a coin is collected
+            self.collect_sound.play()  # everytime a coin is collected
         super().afficher()
 
 
@@ -430,10 +435,17 @@ player_lives = 3
 player_gems = 0
 coins_collected = 0
 coinArr = []
+gemArr = []
 for i in range(10):
     posX = random.randint(20, 750)
     posY = random.randint(20, 750)
-    coinArr.append(spinningCoin(imageBank["spinning_coin"], fenetre, posX, posY))
+    coinArr.append(collectable(imageBank["spinning_coin"], soundBank["coin"], fenetre, posX, posY))
+for i in range(10):
+    posX = random.randint(20, 750)
+    posY = random.randint(20, 750)
+    imgArr=[]
+    imgArr.append(imageBank["blue_gem"])
+    gemArr.append(collectable(imgArr, soundBank["gem"], fenetre, posX, posY))
 # timer stuff
 playtimePerLvl = 300  # time in seconds
 timeConst = playtimePerLvl
@@ -595,7 +607,12 @@ while continuer:
             else:
                 coins_collected = coins_collected + 1
                 coinArr.remove(coin)
-        coin_number = 10
+        for gem in gemArr:
+            if not gem.collected:
+                gem.afficher()
+            else:
+                player_gems = player_gems + 1
+                gemArr.remove(gem)
         ingameExitButton.afficher()
         display_hud(fenetre, player_lives, player_gems, coins_collected, playtimePerLvl)
         # rafraichissement
