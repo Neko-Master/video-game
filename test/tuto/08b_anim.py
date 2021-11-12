@@ -28,6 +28,12 @@ def lire_images():
         "Images/Animations/platformerGraphics_otherStyle/bg_castle.png").convert_alpha()
     imageBank["mur"] = pygame.image.load("Images/mur.png").convert_alpha()
     imageBank["mur"] = pygame.transform.scale(imageBank["mur"], (64, 64))
+    imageBank["coin_hud"] = pygame.transform.scale(
+        pygame.image.load("Images/Animations/coinAnimation/coin_1.png").convert_alpha(), (25, 25))
+    imageBank["spinning_coin"] = []
+    for i in range(6):
+        imageBank["spinning_coin"].append(
+            pygame.image.load("Images/Animations/coinAnimation/coin_" + str(i + 1) + ".png").convert_alpha())
     imageBank["flame"] = []
     for i in range(4):
         imageBank["flame"].append(pygame.image.load("Images/Animations/flameBall_" + str(i) + ".png").convert_alpha())
@@ -120,6 +126,8 @@ def lire_sounds():
     soundBank["menu_music"].set_volume(0.25)
     soundBank["button_click"] = pygame.mixer.Sound("Sounds/buttonClick.flac")
     soundBank["button_click"].set_volume(0.3)
+    soundBank["coin"] = pygame.mixer.Sound("Sounds/coin.wav")
+    soundBank["coin"].set_volume(0.1)
     return soundBank
 
 
@@ -139,14 +147,14 @@ def collide_map(maMap, un_rect):
     irect = un_rect.y // 64
     jrect = int(un_rect.x / 64)
 
-    if (maMap[irect][jrect] != 0):
+    if maMap[irect][jrect] != 0:
         return True
 
     # bas
     irect = (un_rect.y + un_rect.h) // 64
     jrect = int(un_rect.x / 64)
 
-    if (maMap[irect][jrect] != 0):
+    if maMap[irect][jrect] != 0:
         return True
 
     return False
@@ -192,10 +200,10 @@ class Button(ElementGraphique):
 
 class ElementAnime(ElementGraphique):
     # images est un tableau des images de l'animation
-    def __init__(self, images, fen, x=0, y=0):
+    def __init__(self, images, fen, x=0, y=0, delai=3):
         super().__init__(images[0], fen, x, y)
         self.images = images
-        self.delai = 10
+        self.delai = delai
         self.num_image = 0
         self.timer = 0
 
@@ -215,12 +223,12 @@ class ElementAnime(ElementGraphique):
 
 class ElementAnimeDir(ElementAnime):
     # dico_images est le dictionnaire contenant toutes les animations par direction
-    def __init__(self, dico_images, fen, x=0, y=0):
+    def __init__(self, dico_images, fen, x=0, y=0, delai=3):
         self.dico_images = dico_images
         self.direction = "droite"
         self.old_dir = "droite"
 
-        super().__init__(self.dico_images[self.direction], fen, x, y)
+        super().__init__(self.dico_images[self.direction], fen, x, y, delai)
 
     def afficher(self):
         if self.direction != self.old_dir:
@@ -232,8 +240,8 @@ class ElementAnimeDir(ElementAnime):
 
 
 class Joueur(ElementAnimeDir):
-    def __init__(self, img, fen, x=0, y=0):
-        super().__init__(img, fen, x, y)
+    def __init__(self, img, fen, x=0, y=0, delai=1):
+        super().__init__(img, fen, x, y, delai)
 
         self.vitesse = 5
 
@@ -294,15 +302,11 @@ class Balle(ElementAnime):
             self.dy = -self.dy
 
 
-def createTimerElements(fenetre, time):
+def display_hud(fenetre, lives, gem_count, coin_count, time):
     a = 10
     for d in str(time):
         ElementGraphique(imageBank["number_" + d], fenetre, a, 10).afficher()
         a = a + imageBank["number_" + d].get_width() + 2
-
-
-# show how many lives you have
-def live_display(fenetre, lives):
     a = 300
     # display lives i have
     for i in range(lives):
@@ -312,15 +316,24 @@ def live_display(fenetre, lives):
     for i in range(3 - lives):
         ElementGraphique(imageBank["heart_empty"], fenetre, a, 10).afficher()
         a = a + imageBank["heart_full"].get_width() + 2
-
-
-def gem_display(fenetre, gem_count):
+    # display inventory
+    # gems
     ElementGraphique(imageBank["hud_gem_blue"], fenetre, 10, 53).afficher()
     ElementGraphique(imageBank["x_sign"], fenetre, 12 + imageBank["hud_gem_blue"].get_width(), 57).afficher()
     # startpos of the numbers
     a = 14 + imageBank["hud_gem_blue"].get_width() + imageBank["x_sign"].get_width()
     for d in str(gem_count):
         ElementGraphique(imageBank["small_number_" + d], fenetre, a, 53).afficher()
+        a = a + imageBank["small_number_" + d].get_width() + 1
+    # coins
+    ElementGraphique(imageBank["coin_hud"], fenetre, 11, 55 + imageBank["hud_gem_blue"].get_height()).afficher()
+    ElementGraphique(imageBank["x_sign"], fenetre, 12 + imageBank["hud_gem_blue"].get_width(),
+                     57 + imageBank["hud_gem_blue"].get_height()).afficher()
+    # startpos of the numbers
+    a = 20 + imageBank["coin_hud"].get_width() + imageBank["x_sign"].get_width()
+    for d in str(coin_count):
+        ElementGraphique(imageBank["small_number_" + d], fenetre, a,
+                         55 + imageBank["hud_gem_blue"].get_height()).afficher()
         a = a + imageBank["small_number_" + d].get_width() + 1
 
 
@@ -337,6 +350,21 @@ soundBank = lire_sounds()
 # lecture de l'image du perso
 
 perso = Joueur(imageBank["player_2"], fenetre, 80, 70)
+
+
+class spinningCoin(ElementAnime):
+    def __init__(self, images, fen, x=0, y=0, delai=3):
+        super().__init__(images, fen, x, y, delai)
+        self.collected = False
+
+    def afficher(self):
+        playerpos = perso.rect  # playerpos
+        # collisioncheck with player
+        if self.rect.colliderect(playerpos) and not self.collected:
+            self.collected = True
+            soundBank["coin"].play()  # everytime a coin is collected
+        super().afficher()
+
 
 mes_balles = []
 for i in range(3):
@@ -388,7 +416,7 @@ maMap = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
 # hella variables for the game xD
-i = 1;
+i = 1
 continuer = 1
 # the menus
 main_menu = True
@@ -400,6 +428,12 @@ defaultPlayer = 1
 # Ingame variables
 player_lives = 3
 player_gems = 0
+coins_collected = 0
+coinArr = []
+for i in range(10):
+    posX = random.randint(20, 750)
+    posY = random.randint(20, 750)
+    coinArr.append(spinningCoin(imageBank["spinning_coin"], fenetre, posX, posY))
 # timer stuff
 playtimePerLvl = 300  # time in seconds
 timeConst = playtimePerLvl
@@ -494,7 +528,7 @@ while continuer:
         endScreenStartButton.afficher()
         endScreenQuitButton.afficher()
         pygame.display.flip()
-
+    # TODO create methods for the levels and call them instaed of everything in this loop
     else:
         soundBank["menu_music"].stop()
         if not lvlMusicPlaying:
@@ -555,10 +589,15 @@ while continuer:
 
         for e in mes_balles:
             e.afficher()
-        createTimerElements(fenetre, playtimePerLvl)
-        live_display(fenetre, player_lives)
-        gem_display(fenetre, player_gems)
+        for coin in coinArr:
+            if not coin.collected:
+                coin.afficher()
+            else:
+                coins_collected = coins_collected + 1
+                coinArr.remove(coin)
+        coin_number = 10
         ingameExitButton.afficher()
+        display_hud(fenetre, player_lives, player_gems, coins_collected, playtimePerLvl)
         # rafraichissement
         pygame.display.flip()
 
