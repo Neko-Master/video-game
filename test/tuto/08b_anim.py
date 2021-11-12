@@ -459,6 +459,17 @@ maMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
          [2, 3, 4, 0, 0, 0, 0, 2, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 3, 3, 3, 4],  # 13
          [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],]  # 14
 
+def maxisLvl():
+    continuer=True
+    horologeMaxi = pygame.time.Clock()
+    while continuer:
+        horologeMaxi.tick(30)
+        for fonds in fondarr:
+            fonds.afficher()
+        pygame.display.flip()
+        pygame.time.wait(5000)
+        continuer=False
+
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
 # hella variables for the game xD
@@ -497,6 +508,8 @@ soundBank["menu_music"].play(10)
 lvlMusicPlaying = False
 pygame.mixer.music.load("Sounds/Backgroundmusic.ogg")  # has to be done like this so you can pause/unpause
 pygame.mixer.music.set_volume(0.25)
+#lvlChoice
+lvlMaxi=False
 # start point of timer
 start_ticks = pygame.time.get_ticks()
 while continuer:
@@ -533,6 +546,7 @@ while continuer:
                 defaultPlayer = i + 1
                 perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 80, 70)
                 player_selection_menu = False
+                #lvlMaxi=True
                 fenetre.fill((0, 0, 0))
                 start_ticks = pygame.time.get_ticks()
                 pygame.display.flip()
@@ -582,6 +596,9 @@ while continuer:
         endScreenQuitButton.afficher()
         pygame.display.flip()
     # TODO create methods for the levels and call them instaed of everything in this loop
+    elif lvlMaxi:
+        maxisLvl()
+        lvlMaxi=False
     else:
         soundBank["menu_music"].stop()
         if not lvlMusicPlaying:
