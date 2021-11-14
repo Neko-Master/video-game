@@ -52,6 +52,12 @@ def lire_images():
     imageBank["mur"] = pygame.transform.scale(imageBank["mur"], (64, 64))
     imageBank["coin_hud"] = pygame.transform.scale(
         pygame.image.load("Images/Animations/coinAnimation/coin_1.png").convert_alpha(), (25, 25))
+    imageBank["blue_gem_animated"] = []
+    img1 = pygame.image.load("Images/Animations/gemAnimation/blue_gem_anim.png").convert_alpha()
+    for i in range(8):
+        cropped = pygame.Surface((32, 32), pygame.SRCALPHA)
+        cropped.blit(img1, (0, 0), (i*32, 0, 32, 32))
+        imageBank["blue_gem_animated"].append(cropped)
     imageBank["spinning_coin"] = []
     for i in range(6):
         imageBank["spinning_coin"].append(
@@ -213,10 +219,6 @@ class ElementGraphique():
     def afficher(self):
         self.fenetre.blit(self.image, self.rect)
 
-    def contact(self, autre):
-        if self.rect.colliderect(autre.rect):
-            return True
-        return False
 
 
 class Button(ElementGraphique):
@@ -345,35 +347,35 @@ class Balle(ElementAnime):
 def display_hud(fenetre, lives, gem_count, coin_count, time):
     a = 10
     for d in str(time):
-        ElementGraphique(imageBank["number_" + d], fenetre, a, 10).afficher()
+        ElementGraphique(imageBank["number_" + d], fenetre, a, 5).afficher()
         a = a + imageBank["number_" + d].get_width() + 2
-    a = 300
+    a = fenetre.get_rect().centerx - (1.5 * imageBank["heart_full"].get_width())
     # display lives i have
     for i in range(lives):
-        ElementGraphique(imageBank["heart_full"], fenetre, a, 10).afficher()
+        ElementGraphique(imageBank["heart_full"], fenetre, a, 5).afficher()
         a = a + imageBank["heart_full"].get_width() + 2
     # display empty hearts ive lost
     for i in range(3 - lives):
-        ElementGraphique(imageBank["heart_empty"], fenetre, a, 10).afficher()
+        ElementGraphique(imageBank["heart_empty"], fenetre, a, 5).afficher()
         a = a + imageBank["heart_full"].get_width() + 2
     # display inventory
     # gems
-    ElementGraphique(imageBank["hud_gem_blue"], fenetre, 10, 53).afficher()
-    ElementGraphique(imageBank["x_sign"], fenetre, 12 + imageBank["hud_gem_blue"].get_width(), 57).afficher()
+    ElementGraphique(imageBank["blue_gem_animated"][0], fenetre, 10, 53).afficher()
+    ElementGraphique(imageBank["x_sign"], fenetre, 12 + imageBank["blue_gem_animated"][0].get_width(), 57).afficher()
     # startpos of the numbers
-    a = 14 + imageBank["hud_gem_blue"].get_width() + imageBank["x_sign"].get_width()
+    a = 14 + imageBank["blue_gem_animated"][0].get_width() + imageBank["x_sign"].get_width()
     for d in str(gem_count):
         ElementGraphique(imageBank["small_number_" + d], fenetre, a, 53).afficher()
         a = a + imageBank["small_number_" + d].get_width() + 1
     # coins
-    ElementGraphique(imageBank["coin_hud"], fenetre, 11, 55 + imageBank["hud_gem_blue"].get_height()).afficher()
-    ElementGraphique(imageBank["x_sign"], fenetre, 12 + imageBank["hud_gem_blue"].get_width(),
-                     57 + imageBank["hud_gem_blue"].get_height()).afficher()
+    ElementGraphique(imageBank["coin_hud"], fenetre, 11, 55 + imageBank["blue_gem_animated"][0].get_height()).afficher()
+    ElementGraphique(imageBank["x_sign"], fenetre, 12 + imageBank["blue_gem_animated"][0].get_width(),
+                     57 + imageBank["blue_gem_animated"][0].get_height()).afficher()
     # startpos of the numbers
     a = 20 + imageBank["coin_hud"].get_width() + imageBank["x_sign"].get_width()
     for d in str(coin_count):
         ElementGraphique(imageBank["small_number_" + d], fenetre, a,
-                         55 + imageBank["hud_gem_blue"].get_height()).afficher()
+                         55 + imageBank["blue_gem_animated"][0].get_height()).afficher()
         a = a + imageBank["small_number_" + d].get_width() + 1
 
 
@@ -392,6 +394,7 @@ soundBank = lire_sounds()
 perso = Joueur(imageBank["player_2"], fenetre, 80, 70)
 
 
+# class is declared at this point bc Joueur object is needed
 class collectable(ElementAnime):
     def __init__(self, images, collect_sound, fen, x=0, y=0, delai=3):
         super().__init__(images, fen, x, y, delai)
@@ -420,9 +423,11 @@ for j in range(6):
 # Create the buttons for the game
 playerButtons = []
 for i in range(4):
-    playerButtons.append(Button(imageBank["player_" + str(i + 1)]["droite"][0], fenetre, fenetre.get_rect().centerx-175+(100 * (i)), fenetre.get_rect().centery-100))
+    playerButtons.append(
+        Button(imageBank["player_" + str(i + 1)]["droite"][0], fenetre, fenetre.get_rect().centerx - 175 + (100 * (i)),
+               fenetre.get_rect().centery - 100))
 ingameExitButton = Button(imageBank["exit_button"], fenetre,
-                          fenetre.get_width() - imageBank["exit_button"].get_width() - 3, 3)
+                          fenetre.get_width() - imageBank["exit_button"].get_width() - 3, 5)
 menuStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_rect().centerx - 150,
                          fenetre.get_rect().centery - 100)
 menuQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
@@ -439,7 +444,8 @@ texte = ElementGraphique(font.render('The platformer of Maximilian Amougou and T
 textePlayerMenu = ElementGraphique(font.render('Choose Player by clicking on him:', True, (3, 45, 49)), fenetre,
                                    x=fenetre.get_rect().centerx - 200, y=fenetre.get_rect().centery - 200)
 pauseText = ElementGraphique(
-    font.render("Quit game? Press 'Y'es to end it all or 'N'o to resume the fun", True, (3, 45, 49)), fenetre, x=fenetre.get_rect().centerx-300,
+    font.render("Quit game? Press 'Y'es to end it all or 'N'o to resume the fun", True, (3, 45, 49)), fenetre,
+    x=fenetre.get_rect().centerx - 300,
     y=fenetre.get_rect().centery)
 endScreenMessage = ElementGraphique(font.render("Try again?", True, (3, 45, 49)), fenetre, x=256, y=256)
 
@@ -502,9 +508,7 @@ for i in range(10):
 for i in range(10):
     posX = random.randint(20, 750)
     posY = random.randint(20, 750)
-    imgArr = []
-    imgArr.append(imageBank["blue_gem"])
-    gemArr.append(collectable(imgArr, soundBank["gem"], fenetre, posX, posY))
+    gemArr.append(collectable(imageBank["blue_gem_animated"], soundBank["gem"], fenetre, posX, posY))
 # timer stuff
 playtimePerLvl = 300  # time in seconds
 timeConst = playtimePerLvl

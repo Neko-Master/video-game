@@ -1,8 +1,7 @@
 Maxi:
--find other sounds(Jumping, hitting enemy, get hit, get coins)
--build lvls(Goal are 3)
+-find other sounds(Jumping, hitting enemy, get hit)
+-build a lvl
 -enemies/lava
--display earned stuff on hud
 -you need keys or gem to win
 -highscore
--database txt file
+-database as txt file
