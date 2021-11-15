@@ -321,7 +321,7 @@ class Joueur(ElementAnimeDir):
         if not (new_rect.x == self.rect.x and new_rect.y == self.rect.y):
             # collision with tiles
             for tile in tilelist:
-                    # x-axis
+                # x-axis
                 if tile.rect.colliderect(new_rect.x, self.rect.y, self.rect.width, self.rect.height):
                     new_rect.x = self.rect.x
                     if type(tile).__name__ == "lava":
@@ -514,9 +514,9 @@ class collectable(ElementAnime):
 
 class lava(ElementGraphique):
     def __init__(self, fen, x=0, y=0):
-        cropped = pygame.Surface((70, 55),pygame.SRCALPHA)
+        cropped = pygame.Surface((70, 55), pygame.SRCALPHA)
         cropped.blit(imageBank["all_tiles"].get_image_name("liquidLavaTop_mid.png"), (0, 0), (0, 15, 70, 55))
-        super().__init__(cropped, fen, x, y+15)
+        super().__init__(cropped, fen, x, y + 15)
 
     def afficher(self):
         super().afficher()
@@ -549,23 +549,23 @@ endScreenStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_re
                               fenetre.get_rect().centery - 100)
 endScreenQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
                              fenetre.get_rect().centery - 100)
-lvlButtons=[]
+lvlButtons = []
 for i in range(3):
-    lvlButtons.append(Button(imageBank["number_" + str(i)],fenetre,435+(i*50),500))
+    lvlButtons.append(Button(imageBank["number_" + str(i)], fenetre, 435 + (i * 50), 500))
 # Choix de la police pour le texte
 font = pygame.font.Font(None, 34)
 # Text to display
 texte = ElementGraphique(font.render('The platformer of Maximilian Amougou and Tony Mardivirin', True, (3, 45, 49)),
                          fenetre, x=fenetre.get_rect().centerx - 300, y=fenetre.get_rect().centery - 200)
 chooseLvlTxt = ElementGraphique(font.render('Choose Level:', True, (3, 45, 49)),
-                         fenetre, x=fenetre.get_rect().centerx - 300, y=fenetre.get_rect().centery + 100)
+                                fenetre, x=fenetre.get_rect().centerx - 300, y=fenetre.get_rect().centery + 100)
 textePlayerMenu = ElementGraphique(font.render('Choose Player by clicking on him:', True, (3, 45, 49)), fenetre,
                                    x=fenetre.get_rect().centerx - 200, y=fenetre.get_rect().centery - 200)
 pauseText = ElementGraphique(
     font.render("Quit game? Press 'Y'es to end it all or 'N'o to resume the fun", True, (3, 45, 49)), fenetre,
     x=fenetre.get_rect().centerx - 300,
     y=fenetre.get_rect().centery)
-endScreenMessage = ElementGraphique(font.render("Try again?", True, (3, 45, 49)), fenetre, x=256, y=256)
+endScreenMessage = ElementGraphique(font.render("Try again?", True, (3, 45, 49)), fenetre, x=300, y=200)
 
 # draw this over screen to make it blurry
 blurryScreenImg = pygame.Surface((fenetre.get_size()))
@@ -600,7 +600,7 @@ game_paused = False
 end_screen = False
 display_blurryScreen = False
 defaultPlayer = 1
-defaultLvl=0
+defaultLvl = 0
 # Ingame variables
 player_lives = 3
 player_gems = 0
@@ -644,7 +644,7 @@ while continuer:
         for i in range(lvlButtons.__len__()):
             lvlButtons[i].afficher()
             if lvlButtons[i].clicked:
-                defaultLvl=i
+                defaultLvl = i
                 main_menu = False
                 player_selection_menu = True
         # Affichage du Texte
@@ -711,16 +711,19 @@ while continuer:
             start_ticks = pygame.time.get_ticks()
             secondsPassed = 0
             timerBuffer = 0
+            defaultLvl=0
+            ingameExitButton.clicked=False
             lvlMusicPlaying = False
-        endScreenMessage.rect.centerx=fenetre.get_rect().centerx
+        endScreenMessage.rect.centerx = fenetre.get_rect().centerx
         endScreenMessage.afficher()
         endScreenStartButton.afficher()
         endScreenQuitButton.afficher()
         pygame.display.flip()
     # TODO create methods for the levels and call them instaed of everything in this loop
-    elif defaultLvl==1:
+    elif defaultLvl == 1:
         maxiLvl()
-        lvlMaxi = False
+        defaultLvl=0
+        end_screen=True
     else:
         soundBank["menu_music"].stop()
         if not lvlMusicPlaying:
