@@ -321,27 +321,32 @@ class Joueur(ElementAnimeDir):
         if not (new_rect.x == self.rect.x and new_rect.y == self.rect.y):
             # collision with tiles
             for tile in tilelist:
-                # x-axis
+                    # x-axis
                 if tile.rect.colliderect(new_rect.x, self.rect.y, self.rect.width, self.rect.height):
                     new_rect.x = self.rect.x
+                    if type(tile).__name__ == "lava":
+                        soundBank["lava_splash"].play()
+                        self.lives = 0
                 # y-axis
-                if tile.rect.colliderect(self.rect.x, new_rect.y, self.rect.width, self.rect.height):
+                elif tile.rect.colliderect(self.rect.x, new_rect.y, self.rect.width, self.rect.height):
+                    if type(tile).__name__ == "lava":
+                        soundBank["lava_splash"].play()
+                        self.lives = 0
                     # jumping
-                    if self.jumpspeed < 0:
+                    elif self.jumpspeed < 0:
                         new_rect.y = tile.rect.bottom
                     # falling
-                    if self.jumpspeed >= 0:
+                    elif self.jumpspeed >= 0:
                         new_rect.y = tile.rect.top - self.rect.height
-
         self.rect = new_rect
-        #keep player onscreen
-        #bottom
+        # keep player onscreen
+        # bottom
         if self.rect.bottom > fenetre.get_height():
             self.rect.bottom = fenetre.get_height()
-        #right
+        # right
         if self.rect.right > fenetre.get_width():
             self.rect.right = fenetre.get_width()
-        #left
+        # left
         if self.rect.left < 0:
             self.rect.left = 0
 
@@ -420,7 +425,7 @@ def maxiLvl():
                [0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
                [0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 9
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-               [0, 0, 0, 0, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0],  # 11
+               [0, 0, 0, 0, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 4, 0, 0, 0],  # 11
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0],  # 12
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 13
                [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
@@ -453,7 +458,8 @@ def maxiLvl():
                     tileList.append(ElementGraphique(sprite.get_image_name("door_closedMid.png"), fenetre, x=50 * j,
                                                      y=50 * i))
         return tileList
-    tiles=createMap()
+
+    tiles = createMap()
     continuer = True
     horologeMaxi = pygame.time.Clock()
     while continuer:
@@ -506,16 +512,13 @@ class collectable(ElementAnime):
         super().afficher()
 
 
-class lava(collectable):
+class lava(ElementGraphique):
     def __init__(self, fen, x=0, y=0):
-        lavaImg = [imageBank["all_tiles"].get_image_name("liquidLavaTop_mid.png")]
-        super().__init__(lavaImg, soundBank["lava_splash"], fen, x, y)
+        cropped = pygame.Surface((70, 55),pygame.SRCALPHA)
+        cropped.blit(imageBank["all_tiles"].get_image_name("liquidLavaTop_mid.png"), (0, 0), (0, 15, 70, 55))
+        super().__init__(cropped, fen, x, y+15)
 
     def afficher(self):
-        playerpos = perso.rect  # playerpos
-        # collisioncheck with player
-        if self.rect.colliderect(playerpos):
-            perso.lives = 0  # dies instant
         super().afficher()
         return self
 
@@ -698,7 +701,7 @@ while continuer:
             secondsPassed = 0
             timerBuffer = 0
             lvlMusicPlaying = False
-
+        endScreenMessage.rect.centerx=fenetre.get_rect().centerx
         endScreenMessage.afficher()
         endScreenStartButton.afficher()
         endScreenQuitButton.afficher()
