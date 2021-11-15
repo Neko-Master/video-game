@@ -549,11 +549,16 @@ endScreenStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_re
                               fenetre.get_rect().centery - 100)
 endScreenQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
                              fenetre.get_rect().centery - 100)
+lvlButtons=[]
+for i in range(3):
+    lvlButtons.append(Button(imageBank["number_" + str(i)],fenetre,435+(i*50),500))
 # Choix de la police pour le texte
 font = pygame.font.Font(None, 34)
 # Text to display
 texte = ElementGraphique(font.render('The platformer of Maximilian Amougou and Tony Mardivirin', True, (3, 45, 49)),
                          fenetre, x=fenetre.get_rect().centerx - 300, y=fenetre.get_rect().centery - 200)
+chooseLvlTxt = ElementGraphique(font.render('Choose Level:', True, (3, 45, 49)),
+                         fenetre, x=fenetre.get_rect().centerx - 300, y=fenetre.get_rect().centery + 100)
 textePlayerMenu = ElementGraphique(font.render('Choose Player by clicking on him:', True, (3, 45, 49)), fenetre,
                                    x=fenetre.get_rect().centerx - 200, y=fenetre.get_rect().centery - 200)
 pauseText = ElementGraphique(
@@ -595,6 +600,7 @@ game_paused = False
 end_screen = False
 display_blurryScreen = False
 defaultPlayer = 1
+defaultLvl=0
 # Ingame variables
 player_lives = 3
 player_gems = 0
@@ -619,8 +625,6 @@ soundBank["menu_music"].play(10)
 lvlMusicPlaying = False
 pygame.mixer.music.load("Sounds/Backgroundmusic.ogg")  # has to be done like this so you can pause/unpause
 pygame.mixer.music.set_volume(0.25)
-# lvlChoice
-lvlMaxi = False
 # start point of timer
 start_ticks = pygame.time.get_ticks()
 while continuer:
@@ -637,8 +641,15 @@ while continuer:
             player_selection_menu = True
             fenetre.fill((0, 0, 0))
             pygame.display.flip()
+        for i in range(lvlButtons.__len__()):
+            lvlButtons[i].afficher()
+            if lvlButtons[i].clicked:
+                defaultLvl=i
+                main_menu = False
+                player_selection_menu = True
         # Affichage du Texte
         texte.afficher()
+        chooseLvlTxt.afficher()
         menuStartButton.afficher()
         menuQuitButton.afficher()
         pygame.display.flip()
@@ -707,7 +718,7 @@ while continuer:
         endScreenQuitButton.afficher()
         pygame.display.flip()
     # TODO create methods for the levels and call them instaed of everything in this loop
-    elif lvlMaxi:
+    elif defaultLvl==1:
         maxiLvl()
         lvlMaxi = False
     else:
