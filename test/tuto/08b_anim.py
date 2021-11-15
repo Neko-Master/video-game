@@ -681,3 +681,5 @@ while continuer:
     # do stuff with events
 # fin du programme principal...
 pygame.quit()
+
+print("hehe")
