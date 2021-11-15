@@ -224,6 +224,7 @@ class ElementGraphique():
 
     def afficher(self):
         self.fenetre.blit(self.image, self.rect)
+        return self
 
 
 class Button(ElementGraphique):
@@ -294,9 +295,9 @@ class Joueur(ElementAnimeDir):
         self.jumpspeed = 0
         self.jump = False
 
-    def deplacer(self):
+    def deplacer(self, tilelist=[]):
         # on recupere l'etat du clavier
-        touches = pygame.key.get_pressed();
+        touches = pygame.key.get_pressed()
         new_rect = copy.deepcopy(self.rect)
         if touches[pygame.K_RIGHT]:
             self.direction = "droite"
@@ -304,7 +305,8 @@ class Joueur(ElementAnimeDir):
         if touches[pygame.K_LEFT]:
             self.direction = "gauche"
             new_rect.x += -self.vitesse
-        if (touches[pygame.K_SPACE] or touches[pygame.K_UP]) and self.jump == False and self.jumpspeed == 10:#the last part prevents doublejumps
+        if (touches[pygame.K_SPACE] or touches[
+            pygame.K_UP]) and self.jump == False and self.jumpspeed == 10:  # the last condition prevents doublejumps
             self.direction = "haut"
             self.jumpspeed = -10
             self.jump = True
@@ -316,14 +318,23 @@ class Joueur(ElementAnimeDir):
         if self.jumpspeed > 10:
             self.jumpspeed = 10
         new_rect.y += self.jumpspeed
+        if not (new_rect.x == self.rect.x and new_rect.y == self.rect.y):
+            for tile in tilelist:
+                # x-axis
+                if tile.rect.colliderect(new_rect.x, self.rect.y, self.rect.width, self.rect.height):
+                    new_rect.x = self.rect.x
+                # y-axis
+                if tile.rect.colliderect(self.rect.x, new_rect.y, self.rect.width, self.rect.height):
+                    # jumping
+                    if self.jumpspeed < 0:
+                        new_rect.y = tile.rect.bottom + self.rect.height
+                    # falling
+                    if self.jumpspeed >= 0:
+                        new_rect.y = tile.rect.top - self.rect.height
 
-        if collide_map(maMap, new_rect):
-            a = 0
-        else:
-            # print("Deplacement accepté")
-            if new_rect.bottom > fenetre.get_height():
-                new_rect.bottom = fenetre.get_height()
-            self.rect = new_rect
+        self.rect = new_rect
+        if self.rect.bottom > fenetre.get_height():
+            self.rect.bottom = fenetre.get_height()
 
 
 class Balle(ElementAnime):
@@ -404,6 +415,7 @@ def maxiLvl():
                [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 5],  # 12
                [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],  # 13
                [5, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5], ]  # 14
+    tileList = []
 
     def displayMap():
         nb_l = len(tileMap)
@@ -412,22 +424,25 @@ def maxiLvl():
         for i in range(nb_l):
             for j in range(nb_c):
                 if tileMap[i][j] == 1:
-                    ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j, y=50 * i).afficher()
+                    tileList.append(ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
+                                                     y=50 * i).afficher())
                 if tileMap[i][j] == 2:
-                    lava(fenetre, x=50 * j, y=50 * i).afficher()
+                    tileList.append(lava(fenetre, x=50 * j, y=50 * i).afficher())
                 if tileMap[i][j] == 3:
-                    ElementGraphique(sprite.get_image_name("castleHalfMid.png"), fenetre, x=50 * j, y=50 * i).afficher()
+                    tileList.append(ElementGraphique(sprite.get_image_name("castleHalfMid.png"), fenetre, x=50 * j,
+                                                     y=50 * i).afficher())
                 if tileMap[i][j] == 4:
-                    ElementGraphique(sprite.get_image_name("castleHalfLeft.png"), fenetre, x=50 * j,
-                                     y=50 * i).afficher()
+                    tileList.append(ElementGraphique(sprite.get_image_name("castleHalfLeft.png"), fenetre, x=50 * j,
+                                                     y=50 * i).afficher())
                 if tileMap[i][j] == 5:
-                    ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j, y=50 * i).afficher()
+                    tileList.append(ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
+                                                     y=50 * i).afficher())
                 if tileMap[i][j] == 8:
-                    ElementGraphique(sprite.get_image_name("door_closedTop.png"), fenetre, x=50 * j,
-                                     y=50 * i).afficher()
+                    tileList.append(ElementGraphique(sprite.get_image_name("door_closedTop.png"), fenetre, x=50 * j,
+                                                     y=50 * i).afficher())
                 if tileMap[i][j] == 9:
-                    ElementGraphique(sprite.get_image_name("door_closedMid.png"), fenetre, x=50 * j,
-                                     y=50 * i).afficher()
+                    tileList.append(ElementGraphique(sprite.get_image_name("door_closedMid.png"), fenetre, x=50 * j,
+                                                     y=50 * i).afficher())
 
     continuer = True
     horologeMaxi = pygame.time.Clock()
@@ -442,7 +457,7 @@ def maxiLvl():
             fonds.afficher()
         displayMap()
         perso.afficher()
-        perso.deplacer()
+        perso.deplacer(tileList)
         ingameExitButton.afficher()
         display_hud(fenetre, player_gems, coins_collected, playtimePerLvl)
         pygame.display.flip()
@@ -491,6 +506,7 @@ class lava(collectable):
         if self.rect.colliderect(playerpos):
             perso.lives = 0  # dies instant
         super().afficher()
+        return self
 
 
 mes_balles = []
@@ -699,7 +715,6 @@ while continuer:
             endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre, x=300,
                                                 y=200)
         playtimePerLvl = timeConst - secondsPassed
-        print(perso.lives)
         if perso.lives <= 0:
             end_screen = True
             endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre, x=300,
