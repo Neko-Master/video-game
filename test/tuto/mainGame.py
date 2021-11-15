@@ -319,6 +319,7 @@ class Joueur(ElementAnimeDir):
             self.jumpspeed = 10
         new_rect.y += self.jumpspeed
         if not (new_rect.x == self.rect.x and new_rect.y == self.rect.y):
+            # collision with tiles
             for tile in tilelist:
                 # x-axis
                 if tile.rect.colliderect(new_rect.x, self.rect.y, self.rect.width, self.rect.height):
@@ -327,14 +328,22 @@ class Joueur(ElementAnimeDir):
                 if tile.rect.colliderect(self.rect.x, new_rect.y, self.rect.width, self.rect.height):
                     # jumping
                     if self.jumpspeed < 0:
-                        new_rect.y = tile.rect.bottom + self.rect.height
+                        new_rect.y = tile.rect.bottom
                     # falling
                     if self.jumpspeed >= 0:
                         new_rect.y = tile.rect.top - self.rect.height
 
         self.rect = new_rect
+        #keep player onscreen
+        #bottom
         if self.rect.bottom > fenetre.get_height():
             self.rect.bottom = fenetre.get_height()
+        #right
+        if self.rect.right > fenetre.get_width():
+            self.rect.right = fenetre.get_width()
+        #left
+        if self.rect.left < 0:
+            self.rect.left = 0
 
 
 class Balle(ElementAnime):
@@ -401,23 +410,23 @@ def display_hud(fenetre, gem_count, coin_count, time):
 
 
 def maxiLvl():
-    tileMap = [[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],  # 1
-               [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 5],  # 2
-               [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5],  # 3
-               [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 3, 5],  # 4
-               [5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],  # 5
-               [5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],  # 6
-               [5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],  # 7
-               [5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 5],  # 8
-               [5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],  # 9
-               [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],  # 10
-               [5, 0, 0, 0, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 5],  # 11
-               [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 5],  # 12
-               [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],  # 13
-               [5, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5], ]  # 14
-    tileList = []
+    tileMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0],  # 2
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0],  # 3
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 3, 0],  # 4
+               [0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+               [0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+               [0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+               [0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+               [0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 9
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
+               [0, 0, 0, 0, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0],  # 11
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0],  # 12
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 13
+               [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
 
-    def displayMap():
+    def createMap():
+        tileList = []
         nb_l = len(tileMap)
         nb_c = len(tileMap[0])
         sprite = imageBank["all_tiles"]
@@ -425,25 +434,26 @@ def maxiLvl():
             for j in range(nb_c):
                 if tileMap[i][j] == 1:
                     tileList.append(ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
-                                                     y=50 * i).afficher())
+                                                     y=50 * i))
                 if tileMap[i][j] == 2:
-                    tileList.append(lava(fenetre, x=50 * j, y=50 * i).afficher())
+                    tileList.append(lava(fenetre, x=50 * j, y=50 * i))
                 if tileMap[i][j] == 3:
                     tileList.append(ElementGraphique(sprite.get_image_name("castleHalfMid.png"), fenetre, x=50 * j,
-                                                     y=50 * i).afficher())
+                                                     y=50 * i))
                 if tileMap[i][j] == 4:
                     tileList.append(ElementGraphique(sprite.get_image_name("castleHalfLeft.png"), fenetre, x=50 * j,
-                                                     y=50 * i).afficher())
+                                                     y=50 * i))
                 if tileMap[i][j] == 5:
                     tileList.append(ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
-                                                     y=50 * i).afficher())
+                                                     y=50 * i))
                 if tileMap[i][j] == 8:
                     tileList.append(ElementGraphique(sprite.get_image_name("door_closedTop.png"), fenetre, x=50 * j,
-                                                     y=50 * i).afficher())
+                                                     y=50 * i))
                 if tileMap[i][j] == 9:
                     tileList.append(ElementGraphique(sprite.get_image_name("door_closedMid.png"), fenetre, x=50 * j,
-                                                     y=50 * i).afficher())
-
+                                                     y=50 * i))
+        return tileList
+    tiles=createMap()
     continuer = True
     horologeMaxi = pygame.time.Clock()
     while continuer:
@@ -455,9 +465,10 @@ def maxiLvl():
         playtimePerLvl = timeConst - secondsPassed
         for fonds in fondarr:
             fonds.afficher()
-        displayMap()
+        for tile in tiles:
+            tile.afficher()
         perso.afficher()
-        perso.deplacer(tileList)
+        perso.deplacer(tiles)
         ingameExitButton.afficher()
         display_hud(fenetre, player_gems, coins_collected, playtimePerLvl)
         pygame.display.flip()
