@@ -164,6 +164,8 @@ def lire_sounds():
     soundBank["gem"].set_volume(0.1)
     soundBank["lava_splash"] = pygame.mixer.Sound("Sounds/lava.flac")
     soundBank["lava_splash"].set_volume(0.1)
+    soundBank["jump"] = pygame.mixer.Sound("Sounds/jump.wav")
+    soundBank["jump"].set_volume(0.15)
     return soundBank
 
 
@@ -299,24 +301,26 @@ class Joueur(ElementAnimeDir):
         # on recupere l'etat du clavier
         touches = pygame.key.get_pressed()
         new_rect = copy.deepcopy(self.rect)
-        if touches[pygame.K_RIGHT]:
+        if touches[pygame.K_RIGHT] or touches[pygame.K_d]:
             self.direction = "droite"
             new_rect.x += self.vitesse
-        if touches[pygame.K_LEFT]:
+        if touches[pygame.K_LEFT] or touches[pygame.K_a]:
             self.direction = "gauche"
             new_rect.x += -self.vitesse
         if (touches[pygame.K_SPACE] or touches[
-            pygame.K_UP]) and self.jump == False and self.jumpspeed == 10:  # the last condition prevents doublejumps
+            pygame.K_UP] or touches[
+                pygame.K_w]) and self.jump == False and self.jumpspeed == 11:  # the last condition prevents doublejumps
             self.direction = "haut"
-            self.jumpspeed = -10
+            self.jumpspeed = -11
             self.jump = True
+            soundBank["jump"].play()
         if (touches[pygame.K_SPACE] or touches[pygame.K_UP]) == False:
             self.jump = False
 
         # gravity
         self.jumpspeed += 1  # this controls how fast the plyer falls down
-        if self.jumpspeed > 10:
-            self.jumpspeed = 10
+        if self.jumpspeed > 11:
+            self.jumpspeed = 11
         new_rect.y += self.jumpspeed
         if not (new_rect.x == self.rect.x and new_rect.y == self.rect.y):
             # collision with tiles
@@ -416,48 +420,76 @@ def display_hud(fenetre, gem_count, coin_count, time):
 
 def maxiLvl():
     tileMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0],  # 2
+               [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0],  # 2
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0],  # 3
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 3, 0],  # 4
-               [0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
-               [0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
-               [0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
-               [0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
-               [0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 9
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-               [0, 0, 0, 0, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 4, 0, 0, 0],  # 11
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0],  # 12
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 13
-               [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+               [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0],  # 9
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
+               [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
+               [0, 10, 0, 0, 0, 0, 0, 3, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 13
+               [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
 
     def createMap():
-        tileList = []
+        mytiles = {}
+        mytiles["tileList"] = []
+        mytiles["styleTileList"] = []
         nb_l = len(tileMap)
         nb_c = len(tileMap[0])
         sprite = imageBank["all_tiles"]
         for i in range(nb_l):
             for j in range(nb_c):
                 if tileMap[i][j] == 1:
-                    tileList.append(ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
-                                                     y=50 * i))
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
+                                         y=50 * i))
                 if tileMap[i][j] == 2:
-                    tileList.append(lava(fenetre, x=50 * j, y=50 * i))
+                    mytiles["tileList"].append(lava(fenetre, x=50 * j, y=50 * i))
                 if tileMap[i][j] == 3:
-                    tileList.append(ElementGraphique(sprite.get_image_name("castleHalfMid.png"), fenetre, x=50 * j,
-                                                     y=50 * i))
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleHalfMid.png"), fenetre, x=50 * j,
+                                         y=50 * i))
                 if tileMap[i][j] == 4:
-                    tileList.append(ElementGraphique(sprite.get_image_name("castleHalfLeft.png"), fenetre, x=50 * j,
-                                                     y=50 * i))
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleHalfLeft.png"), fenetre, x=50 * j,
+                                         y=50 * i))
                 if tileMap[i][j] == 5:
-                    tileList.append(ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
-                                                     y=50 * i))
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
+                                         y=50 * i))
+                if tileMap[i][j] == 6:
+                    mytiles["styleTileList"].append(
+                        ElementGraphique(sprite.get_image_name("window.png"), fenetre, x=50 * j,
+                                         y=50 * i))
+                if tileMap[i][j] == 7:
+                    torchArr = [sprite.get_image_name("tochLit.png"), sprite.get_image_name("tochLit2.png")]
+                    mytiles["styleTileList"].append(
+                        ElementAnime(torchArr, fenetre, x=50 * j,
+                                     y=50 * i))
                 if tileMap[i][j] == 8:
-                    tileList.append(ElementGraphique(sprite.get_image_name("door_closedTop.png"), fenetre, x=50 * j,
-                                                     y=50 * i))
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("door_closedTop.png"), fenetre, x=50 * j,
+                                         y=50 * i))
                 if tileMap[i][j] == 9:
-                    tileList.append(ElementGraphique(sprite.get_image_name("door_closedMid.png"), fenetre, x=50 * j,
-                                                     y=50 * i))
-        return tileList
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("door_closedMid.png"), fenetre, x=50 * j,
+                                         y=50 * i))
+                if tileMap[i][j] == 10:
+                    mytiles["styleTileList"].append(
+                        ElementGraphique(sprite.get_image_name("signRight.png"), fenetre, x=50 * j,
+                                         y=50 * i))
+                if tileMap[i][j] == 11:
+                    cropped = pygame.Surface((50, 20), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (0, 0),
+                                 (0, 32, 50, 20))
+                    mytiles["tileList"].append(
+                        ElementGraphique(cropped, fenetre, x=50 * j,
+                                         y=(50 * i)+50))
+        return mytiles
 
     tiles = createMap()
     continuer = True
@@ -471,10 +503,12 @@ def maxiLvl():
         playtimePerLvl = timeConst - secondsPassed
         for fonds in fondarr:
             fonds.afficher()
-        for tile in tiles:
+        for tile in tiles["tileList"]:
+            tile.afficher()
+        for tile in tiles["styleTileList"]:
             tile.afficher()
         perso.afficher()
-        perso.deplacer(tiles)
+        perso.deplacer(tiles["tileList"])
         ingameExitButton.afficher()
         display_hud(fenetre, player_gems, coins_collected, playtimePerLvl)
         pygame.display.flip()
@@ -493,7 +527,7 @@ soundBank = lire_sounds()
 
 # lecture de l'image du perso
 
-perso = Joueur(imageBank["player_2"], fenetre, 55, 600)
+perso = Joueur(imageBank["player_2"], fenetre, 5, 600)
 
 
 # class is declared at this point bc Joueur object is needed
@@ -666,7 +700,7 @@ while continuer:
             playerButtons[i].afficher()
             if playerButtons[i].clicked:
                 defaultPlayer = i + 1
-                perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 70, 500)  # 55,600 for maxi Lvl
+                perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 5, 500)  # 5,600 for maxi Lvl
                 player_selection_menu = False
                 lvlMaxi = True
                 fenetre.fill((0, 0, 0))
@@ -711,19 +745,19 @@ while continuer:
             start_ticks = pygame.time.get_ticks()
             secondsPassed = 0
             timerBuffer = 0
-            defaultLvl=0
-            ingameExitButton.clicked=False
+            defaultLvl = 0
+            perso.lives = 3
+            ingameExitButton.clicked = False
             lvlMusicPlaying = False
         endScreenMessage.rect.centerx = fenetre.get_rect().centerx
         endScreenMessage.afficher()
         endScreenStartButton.afficher()
         endScreenQuitButton.afficher()
         pygame.display.flip()
-    # TODO create methods for the levels and call them instaed of everything in this loop
     elif defaultLvl == 1:
         maxiLvl()
-        defaultLvl=0
-        end_screen=True
+        defaultLvl = 0
+        end_screen = True
     else:
         soundBank["menu_music"].stop()
         if not lvlMusicPlaying:
