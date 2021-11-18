@@ -256,6 +256,31 @@ class Button(ElementGraphique):
         super().afficher()
 
 
+class Door(ElementGraphique):
+    def __init__(self, fen, x, y):
+        imagesClosed = [imageBank["all_tiles"].get_image_name("door_closedMid.png"),
+                        imageBank["all_tiles"].get_image_name("door_closedTop.png")]
+        imagesOpen = [imageBank["all_tiles"].get_image_name("door_openMid.png"),
+                      imageBank["all_tiles"].get_image_name("door_openTop.png")]
+        self.imgClosed = pygame.Surface((50, 80), pygame.SRCALPHA)
+        self.imgClosed.blit(imagesClosed[0], (0, 30), (0, 0, 50, 50))
+        self.imgClosed.blit(imagesClosed[1], (0, 0), (0, 20, 50, 30))
+        self.imgOpen = pygame.Surface((50, 80), pygame.SRCALPHA)
+        self.imgOpen.blit(imagesOpen[0], (0, 30), (0, 0, 50, 50))
+        self.imgOpen.blit(imagesOpen[1], (0, 0), (0, 20, 50, 30))
+        self.open = False
+        super().__init__(self.imgClosed, fen, x, y)
+
+    def afficher(self):
+        if self.open:
+            self.fenetre.blit(self.imgOpen, self.rect)
+        else:
+            self.fenetre.blit(self.imgClosed, self.rect)
+        return self
+
+
+#
+
 class ElementAnime(ElementGraphique):
     # images est un tableau des images de l'animation
     def __init__(self, images, fen, x=0, y=0, delai=1):
@@ -431,7 +456,7 @@ def display_hud(fenetre, gem_count, coin_count, time, colorKeys):
         a = a + imageBank["small_number_" + d].get_width() + 1
     # keys
     y = 55 + imageBank["blue_gem_animated"][0].get_height() + imageBank["small_number_1"].get_height() + 2
-    for color,value in colorKeys.items():
+    for color, value in colorKeys.items():
         if value == 0:
             ElementGraphique(imageBank["hud_elements"].get_image_name("hud_key" + color + "_disabled.png", 30, 30),
                              fenetre, 10, y).afficher()
@@ -443,7 +468,7 @@ def display_hud(fenetre, gem_count, coin_count, time, colorKeys):
 
 def maxiLvl():
     tileMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
-               [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0],  # 2
+               [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0],  # 3
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 3, 0],  # 4
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
@@ -493,14 +518,11 @@ def maxiLvl():
                     mytiles["styleTileList"].append(
                         ElementAnime(torchArr, fenetre, x=50 * j,
                                      y=50 * i))
-                if tileMap[i][j] == 8:
-                    mytiles["tileList"].append(
-                        ElementGraphique(sprite.get_image_name("door_closedTop.png"), fenetre, x=50 * j,
-                                         y=50 * i))
+
                 if tileMap[i][j] == 9:
-                    mytiles["tileList"].append(
-                        ElementGraphique(sprite.get_image_name("door_closedMid.png"), fenetre, x=50 * j,
-                                         y=50 * i))
+                    door = Door(fenetre, x=50 * j, y=(50 * i) - 30)
+                    mytiles["styleTileList"].append(door)
+                    mytiles["door"] = door
                 if tileMap[i][j] == 10:
                     mytiles["styleTileList"].append(
                         ElementGraphique(sprite.get_image_name("signRight.png"), fenetre, x=50 * j,
@@ -540,11 +562,15 @@ def maxiLvl():
             tile.afficher()
         perso.afficher()
         perso.deplacer(tiles["tileList"])
-        for color,value in keys.items():
+        keyCounter = 0
+        for color, value in keys.items():
             if value.collected:
-                colors[color]=1
+                colors[color] = 1
+                keyCounter += 1
             else:
                 value.afficher()
+        if keyCounter == 4:
+            tiles["door"].open = True
         ingameExitButton.afficher()
         display_hud(fenetre, player_gems, coins_collected, playtimePerLvl, colors)
         pygame.display.flip()
