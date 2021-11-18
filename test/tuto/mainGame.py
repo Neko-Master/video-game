@@ -140,15 +140,23 @@ def lire_images():
         imageBank["player_" + str(i + 1)]["haut"].append(pygame.transform.scale(pygame.image.load(
             "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_jump.png").convert_alpha(),
                                                                                 (playerWidth, playerHeight)))
-        # down
+        # down/standing
         imageBank["player_" + str(i + 1)]["bas"] = []
         imageBank["player_" + str(i + 1)]["bas"].append(pygame.transform.scale(pygame.image.load(
-            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_duck.png").convert_alpha(),
+            "Images/Animations/platformerGraphics_otherStyle/Player/p" + str(i + 1) + "_stand.png").convert_alpha(),
                                                                                (playerWidth, playerHeight)))
-        tilesDictionary = spritesheet.SpriteSheet(
-            "Images/Animations/platformerGraphics_otherStyle/Tiles/tiles_spritesheet.png",
-            "Images/Animations/platformerGraphics_otherStyle/Tiles/tiles_spritesheet.xml")
-        imageBank["all_tiles"] = tilesDictionary
+    tilesDictionary = spritesheet.SpriteSheet(
+        "Images/Animations/platformerGraphics_otherStyle/Tiles/tiles_spritesheet.png",
+        "Images/Animations/platformerGraphics_otherStyle/Tiles/tiles_spritesheet.xml")
+    imageBank["all_tiles"] = tilesDictionary
+    hudDictionary = spritesheet.SpriteSheet(
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_spritesheet.png",
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_spritesheet.xml")
+    imageBank["hud_elements"] = hudDictionary
+    itemDictionary = spritesheet.SpriteSheet(
+        "Images/Animations/platformerGraphics_otherStyle/Items/items_spritesheet.png",
+        "Images/Animations/platformerGraphics_otherStyle/Items/items_spritesheet.xml")
+    imageBank["all_items"] = itemDictionary
     return imageBank
 
 
@@ -275,8 +283,8 @@ class ElementAnimeDir(ElementAnime):
     # dico_images est le dictionnaire contenant toutes les animations par direction
     def __init__(self, dico_images, fen, x=0, y=0):
         self.dico_images = dico_images
-        self.direction = "droite"
-        self.old_dir = "droite"
+        self.direction = "bas"
+        self.old_dir = "bas"
 
         super().__init__(self.dico_images[self.direction], fen, x, y)
 
@@ -301,26 +309,31 @@ class Joueur(ElementAnimeDir):
         # on recupere l'etat du clavier
         touches = pygame.key.get_pressed()
         new_rect = copy.deepcopy(self.rect)
-        if touches[pygame.K_RIGHT] or touches[pygame.K_d]:
-            self.direction = "droite"
-            new_rect.x += self.vitesse
-        if touches[pygame.K_LEFT] or touches[pygame.K_a]:
-            self.direction = "gauche"
-            new_rect.x += -self.vitesse
-        if (touches[pygame.K_SPACE] or touches[
-            pygame.K_UP] or touches[
-                pygame.K_w]) and self.jump == False and self.jumpspeed == 11:  # the last condition prevents doublejumps
-            self.direction = "haut"
-            self.jumpspeed = -11
-            self.jump = True
-            soundBank["jump"].play()
-        if (touches[pygame.K_SPACE] or touches[pygame.K_UP]) == False:
-            self.jump = False
+        if sum(touches) == 0:
+            self.direction = "bas"
+        else:
+            if touches[pygame.K_RIGHT] or touches[pygame.K_d]:
+                self.direction = "droite"
+                new_rect.x += self.vitesse
+            if touches[pygame.K_LEFT] or touches[pygame.K_a]:
+                self.direction = "gauche"
+                new_rect.x += -self.vitesse
+            if (touches[pygame.K_SPACE] or touches[
+                pygame.K_UP] or touches[
+                    pygame.K_w]) and self.jump == False and self.jumpspeed == 15:  # the last condition prevents doublejumps
+                self.direction = "haut"
+                self.jumpspeed = -11
+                self.jump = True
+                soundBank["jump"].play()
+            if not (touches[pygame.K_SPACE] and touches[
+                pygame.K_UP] and touches[
+                        pygame.K_w]):
+                self.jump = False
 
         # gravity
         self.jumpspeed += 1  # this controls how fast the plyer falls down
-        if self.jumpspeed > 11:
-            self.jumpspeed = 11
+        if self.jumpspeed > 15:
+            self.jumpspeed = 15
         new_rect.y += self.jumpspeed
         if not (new_rect.x == self.rect.x and new_rect.y == self.rect.y):
             # collision with tiles
@@ -383,7 +396,7 @@ class Balle(ElementAnime):
             self.dy = -self.dy
 
 
-def display_hud(fenetre, gem_count, coin_count, time):
+def display_hud(fenetre, gem_count, coin_count, time, colorKeys):
     a = 10
     for d in str(time):
         ElementGraphique(imageBank["number_" + d], fenetre, a, 5).afficher()
@@ -416,6 +429,16 @@ def display_hud(fenetre, gem_count, coin_count, time):
         ElementGraphique(imageBank["small_number_" + d], fenetre, a,
                          55 + imageBank["blue_gem_animated"][0].get_height()).afficher()
         a = a + imageBank["small_number_" + d].get_width() + 1
+    # keys
+    y = 55 + imageBank["blue_gem_animated"][0].get_height() + imageBank["small_number_1"].get_height() + 2
+    for color,value in colorKeys.items():
+        if value == 0:
+            ElementGraphique(imageBank["hud_elements"].get_image_name("hud_key" + color + "_disabled.png", 30, 30),
+                             fenetre, 10, y).afficher()
+        else:
+            ElementGraphique(imageBank["hud_elements"].get_image_name("hud_key" + color + ".png", 30, 30),
+                             fenetre, 10, y).afficher()
+        y = y + 30
 
 
 def maxiLvl():
@@ -488,10 +511,18 @@ def maxiLvl():
                                  (0, 32, 50, 20))
                     mytiles["tileList"].append(
                         ElementGraphique(cropped, fenetre, x=50 * j,
-                                         y=(50 * i)+50))
+                                         y=(50 * i) + 50))
         return mytiles
 
     tiles = createMap()
+    colors = {"Red": 0, "Yellow": 0, "Blue": 0, "Green": 0}
+    keys = {}
+    for color, value in colors.items():
+        posX = random.randint(20, 750)
+        posY = 620
+        keys[color] = (
+            collectable([imageBank["all_items"].get_image_name("key" + color + ".png")], soundBank["coin"], fenetre,
+                        posX, posY))
     continuer = True
     horologeMaxi = pygame.time.Clock()
     while continuer:
@@ -509,8 +540,13 @@ def maxiLvl():
             tile.afficher()
         perso.afficher()
         perso.deplacer(tiles["tileList"])
+        for color,value in keys.items():
+            if value.collected:
+                colors[color]=1
+            else:
+                value.afficher()
         ingameExitButton.afficher()
-        display_hud(fenetre, player_gems, coins_collected, playtimePerLvl)
+        display_hud(fenetre, player_gems, coins_collected, playtimePerLvl, colors)
         pygame.display.flip()
         pygame.event.pump()
 
