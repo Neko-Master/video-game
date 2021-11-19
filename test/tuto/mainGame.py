@@ -181,6 +181,10 @@ def lire_sounds():
     soundBank["keyPickup"].set_volume(0.1)
     soundBank["doorOpens"] = pygame.mixer.Sound("Sounds/doorOpens.wav")
     soundBank["doorOpens"].set_volume(0.35)
+    soundBank["switch"] = pygame.mixer.Sound("Sounds/switch_sound.ogg")
+    soundBank["switch"].set_volume(0.2)
+    soundBank["ticking_clock"] = pygame.mixer.Sound("Sounds/ticking_clock.wav")
+    soundBank["ticking_clock"].set_volume(0.35)# 8 seconds long
     return soundBank
 
 
