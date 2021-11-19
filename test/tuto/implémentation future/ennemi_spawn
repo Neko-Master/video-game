@@ -1,0 +1,21 @@
+class Balle(ElementAnime):
+    def __init__(self, img, fen, maMap):
+
+        x = []
+        y = []
+        z = 0
+
+        nb_l = len(maMap)
+        nb_c = len(maMap[0])
+        for i in range(nb_l):
+            for j in range (nb_c):
+
+
+                if maMap[i][j]==2:
+                    x.append(i*50)
+                    y.append(j*50)
+
+
+        super().__init__(img,fen,x[z],y[z])
+
+        self.dx = random.randint(-5,5)

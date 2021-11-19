@@ -21,11 +21,11 @@ def lire_images():
     imageBank["heart_empty"] = pygame.image.load(
         "Images/Animations/platformerGraphics_otherStyle/HUD/hud_heartEmpty.png").convert_alpha()
     imageBank["hud_gem_green"] = pygame.transform.scale(pygame.image.load(
-        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_gem_green.png").convert_alpha(), (30, 23.478))
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_gem_green.png").convert_alpha(), (30, 23))
     imageBank["hud_gem_blue"] = pygame.transform.scale(pygame.image.load(
-        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_gem_blue.png").convert_alpha(), (30, 23.478))
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_gem_blue.png").convert_alpha(), (30, 23))
     imageBank["x_sign"] = pygame.transform.scale(pygame.image.load(
-        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_x.png").convert_alpha(), (18, 16.8))
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_x.png").convert_alpha(), (18, 17))
     imageBank["sol"] = pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfMid.png")
     imageBank["sol"] = pygame.transform.scale(imageBank["sol"], (50, 50))
     imageBank["solleft"] = pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfLeft.png")
@@ -67,8 +67,8 @@ def lire_images():
         image = pygame.image.load(
             "Images/Animations/platformerGraphics_otherStyle/HUD/hud_" + str(i) + ".png")
         imageBank["small_number_" + str(i)] = pygame.transform.scale(image.convert_alpha(),
-                                                                     (image.get_width() * 0.65,
-                                                                      image.get_height() * 0.65))
+                                                                     (image.get_width() * 1,
+                                                                      image.get_height() * 1))
     playerWidth = 48
     playerHeight = 48
     imageBank["player_4"] = {}
@@ -97,7 +97,7 @@ def lire_images():
         imageBank["player_4"]["bas"].append(image)
 
     # create 3 players you can choose from
-    playerWidth = 36.664
+    playerWidth = 37
     for i in range(3):
         imageBank["player_" + str(i + 1)] = {}
         # right
@@ -315,31 +315,26 @@ class Joueur(ElementAnimeDir):
 
 
 class Balle(ElementAnime):
-    def __init__(self, img, fen):
+    def __init__(self, img, fen, maMap):
 
-        w, h = fen.get_size()
+        x = []
+        y = []
+        z = 0
 
-        x = random.randint(0, w)
-        y = random.randint(0, h)
+        nb_l = len(maMap)
+        nb_c = len(maMap[0])
+        for i in range(nb_l):
+            for j in range (nb_c):
 
-        super().__init__(img, fen, x, y)
 
-        self.dx = random.randint(-5, 5)
-        self.dy = random.randint(-5, 5)
+                if maMap[i][j]==6:
+                    x.append(i*50)
+                    y.append(j*50)
 
-    def deplacer(self):
-        self.rect.x += self.dx
-        self.rect.y += self.dy
 
-        w, h = self.fenetre.get_size()
+        super().__init__(img,fen,x[z],y[z])
 
-        # a gauche ou droite
-        if self.rect.x < 0 or self.rect.x + self.rect.w > w:
-            self.dx = -self.dx
-
-        # en haut ou bas
-        if self.rect.y < 0 or self.rect.y + self.rect.h > h:
-            self.dy = -self.dy
+        self.dx = random.randint(-5,5)
 
 
 def display_hud(fenetre, lives, gem_count, coin_count, time):
@@ -380,7 +375,7 @@ def display_hud(fenetre, lives, gem_count, coin_count, time):
 pygame.init()  # Initialisation de la bibliotheque pygame
 pygame.mixer.init()  # initialize for sound
 # creation de la fenetre
-largeur = 1450
+largeur = 700
 hauteur = 700
 fenetre = pygame.display.set_mode((largeur, hauteur), pygame.NOFRAME)
 
@@ -407,10 +402,7 @@ class collectable(ElementAnime):
         super().afficher()
 
 
-mes_balles = []
-for i in range(3):
-    balle = Balle(imageBank["flame"], fenetre)
-    mes_balles.append(balle)
+
 
 # lecture de l'image du fond
 fondarr = []
@@ -452,29 +444,20 @@ maMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 9
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0],  # 9
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-         [0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0, 0],  # 11
+         [0, 0, 0, 2, 3, 3, 4, 0, 6, 0, 5, 5, 5, 5, 0, 6, 0, 0, 6, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0, 0],  # 11
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0],  # 12
          [2, 3, 4, 0, 0, 0, 0, 2, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 3, 3, 3, 4],  # 13
          [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],  # 14
          ]
 
-maMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 9
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-         [0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0, 0],  # 11
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0],  # 12
-         [2, 3, 4, 0, 0, 0, 0, 2, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 3, 3, 3, 4],  # 13
-         [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],  # 14
-         ]
+mechant = []
+for i in range(4):
+    balle = Balle(imageBank["flame"], fenetre,maMap)
+    mechant.append(balle)
+
+
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
 # hella variables for the game xD
@@ -629,9 +612,9 @@ while continuer:
         else :
             print("libre")
         '''
-
         for e in mes_balles:
-            e.deplacer()
+        e.deplacer()
+
 
         # collisions avec les balles
         '''
@@ -656,7 +639,7 @@ while continuer:
         # Affichage Perso
         perso.afficher()
 
-        for e in mes_balles:
+        for e in mechant:
             e.afficher()
         for coin in coinArr:
             if not coin.collected:
