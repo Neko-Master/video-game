@@ -473,22 +473,15 @@ def display_hud(fenetre, gem_count, coin_count, time, colorKeys={}):
         y = y + 30
 
 
-def maxiLvl():
+def lvl_0():
+    tileMap = 14
+
+
+def level(lvlDict={}):
+    if not lvlDict:
+        return False
     global player_gems, coins_collected
-    tileMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
-               [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9],  # 3
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 4, 3, 3, 3],  # 4
-               [0, 0, 0, 0, 0, 0, 36, 0, 0, 4, 44, 0, 0, 0, 0, 0, 0, 33, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
-               [0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
-               [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
-               [16, 0, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
-               [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0, 33, 0, 0, 0, 33, 0, 0, 33, 7, 6, 7, 0],  # 9
-               [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
-               [92, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
-               [91, 10, 0, 14, 0, 0, 0, 33, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
-               [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
+    tileMap = lvlDict["tile_map"]
 
     def createMap():
         mytiles = {}
@@ -513,9 +506,11 @@ def maxiLvl():
                 if tileMap[i][j] == 2:
                     mytiles["tileList"].append(lava(fenetre, x=50 * j, y=50 * i))
                 if tileMap[i][j] == 3:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfMid.png"), (0, 0),
+                                 (0, 0, 50, 30))
                     mytiles["tileList"].append(
-                        ElementGraphique(sprite.get_image_name("castleHalfMid.png"), fenetre, x=50 * j,
-                                         y=50 * i))
+                        ElementGraphique(cropped, fenetre, x=50 * j, y=50 * i))
                 if tileMap[i][j] == 33:
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleHalf.png"), fenetre, x=50 * j,
@@ -612,7 +607,7 @@ def maxiLvl():
 
     tiles = createMap()
     colors = {"Red": 0, "Yellow": 0, "Blue": 0, "Green": 0}
-    keyPos = [(1017, 600), (20, 340), (750, 425), (400, 250)]
+    keyPos = lvlDict["key_pos"]
     keys = {}
     i = 0
     for color, value in colors.items():
@@ -848,9 +843,9 @@ menuStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_rect().
 menuQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
                         fenetre.get_rect().centery - 100)
 endScreenStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_rect().centerx - 150,
-                              fenetre.get_rect().centery +150)
+                              fenetre.get_rect().centery + 150)
 endScreenQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
-                             fenetre.get_rect().centery +150)
+                             fenetre.get_rect().centery + 150)
 lvlButtons = []
 for i in range(3):
     lvlButtons.append(Button(imageBank["number_" + str(i)], fenetre, 435 + (i * 50), 500))
@@ -909,6 +904,41 @@ player_gems = 0
 coins_collected = 0
 coinArr = []
 gemArr = []
+gameDict = {}
+gameDict["Lvl_0"] = {}
+gameDict["Lvl_0"]["tile_map"] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+    [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+    [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0],  # 9
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
+    [92, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
+    [91, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],  # 13
+    [1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1], ]  # 14
+gameDict["Lvl_0"]["key_pos"] = [(1017, 575), (20, 600), (750, 550), (400, 600)]
+gameDict["Lvl_1"] = {}
+gameDict["Lvl_1"]["tile_map"] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+    [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9],  # 3
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 4, 3, 3, 3],  # 4
+    [0, 0, 0, 0, 0, 0, 36, 0, 0, 4, 44, 0, 0, 0, 0, 0, 0, 33, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+    [0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+    [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+    [16, 0, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0, 33, 0, 0, 0, 33, 0, 0, 33, 7, 6, 7, 0],  # 9
+    [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
+    [92, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
+    [91, 10, 0, 14, 0, 0, 0, 33, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
+    [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
+gameDict["Lvl_1"]["key_pos"] = [(1017, 600), (250, 340), (750, 425), (400, 250)]
 for i in range(10):
     posX = random.randint(100, 1300)
     posY = random.randint(20, 600)
@@ -943,7 +973,7 @@ while continuer:
             player_selection_menu = True
             fenetre.fill((0, 0, 0))
             pygame.display.flip()
-            menuStartButton.clicked=False
+            menuStartButton.clicked = False
         for i in range(lvlButtons.__len__()):
             lvlButtons[i].afficher()
             if lvlButtons[i].clicked:
@@ -1018,16 +1048,28 @@ while continuer:
             perso.lives = 3
             ingameExitButton.clicked = False
             lvlMusicPlaying = False
-            main_menu=True
-            defaultLvl=0
+            main_menu = True
+            defaultLvl = 0
         endScreenMessage.rect.centerx = fenetre.get_rect().centerx
         endScreenMessage.afficher()
         endScreenStartButton.afficher()
         endScreenQuitButton.afficher()
         pygame.display.flip()
+    elif defaultLvl == 0:
+        soundBank["menu_music"].stop()
+        lvlPassed = level(gameDict["Lvl_0"])
+        pygame.mixer.pause()
+        if lvlPassed == -1:
+            continuer = 0
+        elif lvlPassed:
+            defaultLvl = 1
+            perso.rect.x=5
+            perso.rect.y=600
+        else:
+            end_screen = True
     elif defaultLvl == 1:
         soundBank["menu_music"].stop()
-        lvlPassed = maxiLvl()
+        lvlPassed = level(gameDict["Lvl_1"])
         pygame.mixer.pause()
         if lvlPassed == -1:
             continuer = 0
