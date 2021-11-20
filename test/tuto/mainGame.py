@@ -848,9 +848,9 @@ menuStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_rect().
 menuQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
                         fenetre.get_rect().centery - 100)
 endScreenStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_rect().centerx - 150,
-                              fenetre.get_rect().centery - 100)
+                              fenetre.get_rect().centery +150)
 endScreenQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
-                             fenetre.get_rect().centery - 100)
+                             fenetre.get_rect().centery +150)
 lvlButtons = []
 for i in range(3):
     lvlButtons.append(Button(imageBank["number_" + str(i)], fenetre, 435 + (i * 50), 500))
@@ -943,6 +943,7 @@ while continuer:
             player_selection_menu = True
             fenetre.fill((0, 0, 0))
             pygame.display.flip()
+            menuStartButton.clicked=False
         for i in range(lvlButtons.__len__()):
             lvlButtons[i].afficher()
             if lvlButtons[i].clicked:
@@ -1017,14 +1018,17 @@ while continuer:
             perso.lives = 3
             ingameExitButton.clicked = False
             lvlMusicPlaying = False
+            main_menu=True
+            defaultLvl=0
         endScreenMessage.rect.centerx = fenetre.get_rect().centerx
         endScreenMessage.afficher()
         endScreenStartButton.afficher()
         endScreenQuitButton.afficher()
         pygame.display.flip()
     elif defaultLvl == 1:
-        pygame.mixer.music.pause()
-        lvlPassed = maxiLvl()  # TODO here you would go to lvl 2 or the endscreen
+        soundBank["menu_music"].stop()
+        lvlPassed = maxiLvl()
+        pygame.mixer.pause()
         if lvlPassed == -1:
             continuer = 0
         elif lvlPassed:
