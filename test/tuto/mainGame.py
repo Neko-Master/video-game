@@ -503,7 +503,10 @@ def level(lvlDict={}):
                                         y=50 * i))
                 if tileMap[i][j] == 112:
                     platformCounter += 1
-                    newPlat = disappearing_Platform(sprite.get_image_name("castleHalf.png"), fenetre, x=50 * j,
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfMid.png"), (0, 0),
+                                 (0, 0, 50, 30))
+                    newPlat = disappearing_Platform(cropped, fenetre, x=50 * j,
                                                     y=50 * i, lifetime=3000, id=platformCounter)
                     mytiles["disapTiles"].append(newPlat)
                 if tileMap[i][j] == 111:
@@ -528,7 +531,10 @@ def level(lvlDict={}):
                                          y=(50 * i) - 20))
                 if tileMap[i][j] == 35:
                     platformCounter += 1
-                    newPlat = disappearing_Platform(sprite.get_image_name("castleHalf.png"), fenetre, x=50 * j,
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfMid.png"), (0, 0),
+                                 (0, 0, 50, 30))
+                    newPlat = disappearing_Platform(cropped, fenetre, x=50 * j,
                                                     y=(50 * i) + 15, lifetime=3000, id=platformCounter)
                     mytiles["disapTiles"].append(newPlat)
                 if tileMap[i][j] == 36:
