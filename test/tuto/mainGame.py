@@ -506,6 +506,7 @@ def level(lvlDict={}):
                     cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
                     cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfMid.png"), (0, 0),
                                  (0, 0, 50, 30))
+                    cropped.set_alpha(150)
                     newPlat = disappearing_Platform(cropped, fenetre, x=50 * j,
                                                     y=50 * i, lifetime=3000, id=platformCounter)
                     mytiles["disapTiles"].append(newPlat)
@@ -534,6 +535,7 @@ def level(lvlDict={}):
                     cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
                     cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfMid.png"), (0, 0),
                                  (0, 0, 50, 30))
+                    cropped.set_alpha(150)
                     newPlat = disappearing_Platform(cropped, fenetre, x=50 * j,
                                                     y=(50 * i) + 15, lifetime=3000, id=platformCounter)
                     mytiles["disapTiles"].append(newPlat)
