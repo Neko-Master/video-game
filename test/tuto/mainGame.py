@@ -390,8 +390,8 @@ class Joueur(ElementAnimeDir):
         self.rect = new_rect
         # keep player onscreen
         # bottom
-        if self.rect.bottom > fenetre.get_height():
-            self.rect.bottom = fenetre.get_height()
+        if self.rect.top > fenetre.get_height():
+            self.lives = 0
         # right
         if self.rect.right > fenetre.get_width():
             self.rect.right = fenetre.get_width()
@@ -473,10 +473,6 @@ def display_hud(fenetre, gem_count, coin_count, time, colorKeys={}):
         y = y + 30
 
 
-def lvl_0():
-    tileMap = 14
-
-
 def level(lvlDict={}):
     if not lvlDict:
         return False
@@ -487,9 +483,11 @@ def level(lvlDict={}):
         mytiles = {}
         mytiles["tileList"] = []
         mytiles["styleTileList"] = []
-        mytiles["disappearingSpikes"] = []
+        mytiles["affectedByButton"] = []
         mytiles["switches"] = []
+        mytiles["disapTiles"] = []
         switchCounter = 0
+        platformCounter = 0
         nb_l = len(tileMap)
         nb_c = len(tileMap[0])
         sprite = imageBank["all_tiles"]
@@ -499,6 +497,15 @@ def level(lvlDict={}):
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
                                          y=50 * i))
+                if tileMap[i][j] == 1111:
+                    mytiles["affectedByButton"].append(
+                        button_Platform(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
+                                        y=50 * i))
+                if tileMap[i][j] == 112:
+                    platformCounter += 1
+                    newPlat = disappearing_Platform(sprite.get_image_name("castleHalf.png"), fenetre, x=50 * j,
+                                                    y=50 * i, lifetime=3000, id=platformCounter)
+                    mytiles["disapTiles"].append(newPlat)
                 if tileMap[i][j] == 111:
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
@@ -520,9 +527,10 @@ def level(lvlDict={}):
                         ElementGraphique(sprite.get_image_name("castleHalf.png"), fenetre, x=50 * j,
                                          y=(50 * i) - 20))
                 if tileMap[i][j] == 35:
-                    mytiles["tileList"].append(
-                        ElementGraphique(sprite.get_image_name("castleHalf.png"), fenetre, x=50 * j,
-                                         y=(50 * i) + 15))
+                    platformCounter += 1
+                    newPlat = disappearing_Platform(sprite.get_image_name("castleHalf.png"), fenetre, x=50 * j,
+                                                    y=(50 * i) + 15, lifetime=3000, id=platformCounter)
+                    mytiles["disapTiles"].append(newPlat)
                 if tileMap[i][j] == 36:
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleHalf.png"), fenetre, x=(50 * j) - 10,
@@ -580,7 +588,7 @@ def level(lvlDict={}):
                     mytiles["styleTileList"].append(newSpike)
                 if tileMap[i][j] == 13:
                     newSpike = spikes(fenetre, x=50 * j, y=50 * i)
-                    mytiles["disappearingSpikes"].append(newSpike)
+                    mytiles["affectedByButton"].append(newSpike)
                 if tileMap[i][j] == 14:
                     switchCounter += 1
                     passive = pygame.Surface((50, 35), pygame.SRCALPHA)
@@ -589,6 +597,15 @@ def level(lvlDict={}):
                     active.blit(imageBank["all_items"].get_image_name("buttonBlue_pressed.png"), (0, 0),
                                 (0, 15, 50, 35))
                     newSwitch = switch(fenetre, 50 * j, (50 * i) + 15, active, passive, switchCounter)
+                    mytiles["switches"].append(newSwitch)
+                if tileMap[i][j] == 141:
+                    switchCounter += 1
+                    passive = pygame.Surface((50, 35), pygame.SRCALPHA)
+                    passive.blit(imageBank["all_items"].get_image_name("buttonBlue.png"), (0, 0), (0, 15, 50, 35))
+                    active = pygame.Surface((50, 35), pygame.SRCALPHA)
+                    active.blit(imageBank["all_items"].get_image_name("buttonBlue_pressed.png"), (0, 0),
+                                (0, 15, 50, 35))
+                    newSwitch = switch_display_stuff(fenetre, 50 * j, (50 * i) + 15, active, passive, switchCounter)
                     mytiles["switches"].append(newSwitch)
                 if tileMap[i][j] == 15:
                     cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
@@ -640,6 +657,8 @@ def level(lvlDict={}):
                 fonds.afficher()
             for tile in tiles["tileList"]:
                 tile.afficher()
+            for tile in tiles["disapTiles"]:
+                tile.afficher()
             keyCounter = 0
             for color, value in keys.items():
                 if value.collected:
@@ -650,7 +669,7 @@ def level(lvlDict={}):
             for tile in tiles["styleTileList"]:
                 tile.afficher()
             for switchElem in tiles["switches"]:  # every switch needs the elements he turns on off
-                switchElem.afficher(tiles["disappearingSpikes"])
+                switchElem.afficher(tiles["affectedByButton"])
             perso.afficher()
             perso.deplacer(tiles["tileList"])
             if keyCounter == 4 and tiles["door"].open == False:
@@ -678,6 +697,15 @@ def level(lvlDict={}):
             for i in range(len(tiles["switches"])):
                 if pygame.event.get(26 + i):
                     tiles["switches"][i].active = False
+                    soundBank["switch"].play()
+            for i in range(len(tiles["disapTiles"])):
+                if pygame.event.get(31 + i):
+                    tiles["disapTiles"][i].active = False
+                    soundBank["switch"].play()
+                if pygame.event.get(61 + i):
+                    print("repaint tile")
+                    tiles["disapTiles"][i].active = True
+                    tiles["disapTiles"][i].timerRunning = False
                     soundBank["switch"].play()
         else:
             # stop the timer while game is paused
@@ -790,6 +818,31 @@ class switch(ElementGraphique):
         return self
 
 
+class switch_display_stuff(ElementGraphique):
+    def __init__(self, fen, x, y, imgAct, imgNAct, num=1, time=8000):
+        self.imageActive = imgAct
+        self.imageNotActive = imgNAct
+        self.active = False
+        self.number = num
+        self.time = time
+        super().__init__(self.imageNotActive, fen, x, y)
+
+    def afficher(self, thingToActivate=[]):  # last element is the stuff u want to be influenced by the switch
+        if self.rect.colliderect(perso.rect) and self.rect.y - self.rect.height > perso.rect.y and not self.active:
+            self.active = True
+            perso.rect.y -= 30
+            soundBank["switch"].play()
+            pygame.time.set_timer(25 + self.number, self.time, 1)  # unswitch the switch after 8 seconds
+            soundBank["ticking_clock"].play()
+        if self.active:
+            self.fenetre.blit(self.imageActive, self.rect)
+            for tta in thingToActivate:
+                tta.afficher()
+        else:
+            self.fenetre.blit(self.imageNotActive, self.rect)
+        return self
+
+
 class movingPlatform(ElementGraphique):
     def __init__(self, img, fen, xStart=0, xEnd=0, yStart=0, yEnd=0, movingspeed=1):
         self.xStart = xStart
@@ -815,6 +868,40 @@ class movingPlatform(ElementGraphique):
             if self.rect.y < self.yEnd or self.rect.y > self.yStart:
                 self.yDirection *= -1
         super().afficher()
+        return self
+
+
+class button_Platform(ElementGraphique):
+    def __init__(self, img, fen, x, y):
+        super().__init__(img, fen, x, y)
+
+    def afficher(self):
+        if self.rect.colliderect(perso.rect):
+            perso.rect.bottom = self.rect.top
+            perso.jump = False
+        super().afficher()
+        return self
+
+
+class disappearing_Platform(ElementGraphique):
+    def __init__(self, img, fen, x, y, id, lifetime=3000):
+        print(id)
+        self.lifetime = lifetime
+        self.active = True
+        self.timerRunning=False
+        self.id = id
+        super().__init__(img, fen, x, y)
+
+    def afficher(self):
+        if self.rect.colliderect(perso.rect) and self.active:
+            perso.rect.bottom = self.rect.top
+            perso.jump = False
+            if not self.timerRunning:
+                self.timerRunning = True
+                pygame.time.set_timer(30 + self.id, self.lifetime, 1)
+                pygame.time.set_timer(60 + self.id, self.lifetime + 1000, 1)
+        if self.active:
+            super().afficher()
         return self
 
 
@@ -919,20 +1006,20 @@ gameDict["Lvl_0"]["tile_map"] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
     [92, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
-    [91, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],  # 13
-    [1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1], ]  # 14
-gameDict["Lvl_0"]["key_pos"] = [(1017, 575), (100, 600), (750, 550), (400, 600)]
+    [91, 10, 141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],  # 13
+    [1, 1, 1, 0, 0, 1111, 0, 1111, 0, 1111, 0, 0, 1111, 0, 1, 1, 1, 1, 1, 0, 0, 1111, 0, 0, 1, 1, 0, 0, 1], ]  # 14
+gameDict["Lvl_0"]["key_pos"] = [(1017, 575), (150, 600), (750, 550), (400, 600)]
 gameDict["Lvl_1"] = {}
 gameDict["Lvl_1"]["tile_map"] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
     [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9],  # 3
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 4, 3, 3, 3],  # 4
-    [0, 0, 0, 0, 0, 0, 36, 0, 0, 4, 44, 0, 0, 0, 0, 0, 0, 33, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 4, 3, 3, 3],  # 4
+    [0, 0, 0, 0, 0, 0, 36, 0, 0, 4, 44, 0, 0, 0, 0, 0, 0, 112, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
     [0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
     [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
     [16, 0, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0, 33, 0, 0, 0, 33, 0, 0, 33, 7, 6, 7, 0],  # 9
+    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0, 112, 0, 0, 0, 112, 0, 0, 112, 7, 6, 7, 0],  # 9
     [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
     [92, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
@@ -1063,8 +1150,8 @@ while continuer:
             continuer = 0
         elif lvlPassed:
             defaultLvl = 1
-            perso.rect.x=5
-            perso.rect.y=600
+            perso.rect.x = 5
+            perso.rect.y = 600
         else:
             end_screen = True
     elif defaultLvl == 1:
