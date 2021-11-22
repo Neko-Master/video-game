@@ -508,7 +508,7 @@ def level(lvlDict={}):
                                  (0, 0, 50, 30))
                     cropped.set_alpha(150)
                     newPlat = disappearing_Platform(cropped, fenetre, x=50 * j,
-                                                    y=50 * i, lifetime=3000, id=platformCounter)
+                                                    y=50 * i, lifetime=1500, id=platformCounter)
                     mytiles["disapTiles"].append(newPlat)
                 if tileMap[i][j] == 111:
                     mytiles["tileList"].append(
@@ -537,7 +537,7 @@ def level(lvlDict={}):
                                  (0, 0, 50, 30))
                     cropped.set_alpha(150)
                     newPlat = disappearing_Platform(cropped, fenetre, x=50 * j,
-                                                    y=(50 * i) + 15, lifetime=3000, id=platformCounter)
+                                                    y=(50 * i) + 15, lifetime=1500, id=platformCounter)
                     mytiles["disapTiles"].append(newPlat)
                 if tileMap[i][j] == 36:
                     mytiles["tileList"].append(
@@ -648,7 +648,7 @@ def level(lvlDict={}):
     timePassed = 0
     musicplayer = soundBank["menu_music"]
     musicplayer.set_volume(0.25)
-    musicplayer.play()
+    musicplayer.play(10)
     horologeMaxi = pygame.time.Clock()
     start_time = pygame.time.get_ticks()
     while continuer:
@@ -1022,7 +1022,7 @@ gameDict["Lvl_1"]["tile_map"] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
     [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9],  # 3
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 4, 3, 3, 3],  # 4
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 4, 112, 3, 3],  # 4
     [0, 0, 0, 0, 0, 0, 36, 0, 0, 4, 44, 0, 0, 0, 0, 0, 0, 112, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
     [0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
     [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
@@ -1031,7 +1031,7 @@ gameDict["Lvl_1"]["tile_map"] = [
     [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
     [92, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
-    [91, 10, 0, 14, 0, 0, 0, 33, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
+    [91, 10, 0, 14, 0, 0, 0, 112, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
     [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
 gameDict["Lvl_1"]["key_pos"] = [(1017, 600), (20, 340), (750, 425), (400, 250)]
 for i in range(10):
@@ -1043,7 +1043,7 @@ for i in range(10):
     posY = random.randint(20, 600)
     gemArr.append(collectable(imageBank["blue_gem_animated"], soundBank["gem"], fenetre, posX, posY))
 # timer stuff
-playtimePerLvl = 100  # time in seconds
+playtimePerLvl = 150  # time in seconds
 timeConst = playtimePerLvl
 secondsPassed = 0
 timerBuffer = 0
