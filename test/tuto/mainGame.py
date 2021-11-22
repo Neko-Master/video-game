@@ -167,6 +167,8 @@ def lire_sounds():
     soundBank = {}
     soundBank["menu_music"] = pygame.mixer.Sound("Sounds/Menumusic.wav")
     soundBank["menu_music"].set_volume(0.25)
+    soundBank["lvl1"] = pygame.mixer.Sound("Sounds/lvl1_music.mp3")
+    soundBank["lvl1"].set_volume(0.25)
     soundBank["button_click"] = pygame.mixer.Sound("Sounds/buttonClick.flac")
     soundBank["button_click"].set_volume(0.3)
     soundBank["coin"] = pygame.mixer.Sound("Sounds/coin.wav")
@@ -656,9 +658,6 @@ def level(lvlDict={}):
     blurry = False
     timeBuff = 0
     timePassed = 0
-    musicplayer = soundBank["menu_music"]
-    musicplayer.set_volume(0.25)
-    musicplayer.play(10)
     horologeMaxi = pygame.time.Clock()
     start_time = pygame.time.get_ticks()
     while continuer:
@@ -732,7 +731,7 @@ def level(lvlDict={}):
             if not blurry:
                 blurrScreen.afficher()
                 blurry = True
-                musicplayer.stop()
+                pygame.mixer.music.pause()
             pauseText.afficher()
             pygame.display.flip()
             # another cool way to use buttons
@@ -741,7 +740,7 @@ def level(lvlDict={}):
                     if event.key == pygame.K_y:
                         return -1
                     if event.key == pygame.K_n:
-                        musicplayer.play()
+                        pygame.mixer.music.unpause()
                         pause = False
                         start_time = pygame.time.get_ticks()
                         maxiExitButton.clicked = False
@@ -1157,7 +1156,7 @@ while continuer:
         endScreenQuitButton.afficher()
         pygame.display.flip()
     elif defaultLvl == 0:
-        soundBank["menu_music"].stop()
+        #soundBank["menu_music"].stop()
         lvlPassed = level(gameDict["Lvl_0"])
         pygame.mixer.pause()
         if lvlPassed == -1:
@@ -1176,6 +1175,8 @@ while continuer:
             end_screen = True
     elif defaultLvl == 1:
         soundBank["menu_music"].stop()
+        pygame.mixer.music.load("Sounds/lvl1_music.mp3")
+        pygame.mixer.music.play()
         lvlPassed = level(gameDict["Lvl_1"])
         pygame.mixer.pause()
         if lvlPassed == -1:
