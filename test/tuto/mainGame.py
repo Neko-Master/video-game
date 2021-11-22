@@ -478,7 +478,6 @@ def display_hud(fenetre, time, colorKeys={}):
 def level(lvlDict={}):
     if not lvlDict:
         return False
-    global player_gems, coins_collected
     tileMap = lvlDict["tile_map"]
 
     def createMap():
@@ -669,8 +668,10 @@ def level(lvlDict={}):
             horologeMaxi.tick(30)
             timePassed = int(
                 timeBuff + (pygame.time.get_ticks() - start_time) / 1000)  # calculate how many seconds played
-            if timePassed >= timeConst or ingameExitButton.clicked == 1 or perso.lives <= 0:  # you have 300s to reach the end of the lvl
-                return False
+            if timePassed >= timeConst:
+                return -2
+            if perso.lives <= 0:
+                return -3
             playtimePerLvl = timeConst - timePassed
             for fonds in fondarr:
                 fonds.afficher()
@@ -1037,11 +1038,11 @@ gameDict["Lvl_1"]["tile_map"] = [
     [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0],  # 7
     [16, 0, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 77, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0, 112, 0, 0, 0, 112, 0, 0, 112, 7, 6, 7, 0],  # 9
-    [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78          , 0],  # 10
+    [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0],  # 10
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
     [92, 7, 0, 77, 0, 0, 0, 0, 78, 0, 0, 0, 78, 7, 0, 0, 0, 0, 78, 0, 0, 0, 0, 77, 0, 7, 0, 0, 0],  # 12
     [91, 10, 0, 14, 0, 0, 0, 112, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
-    [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
+    [1, 1, 1, 1, 1, 112, 2, 2, 2, 2, 2, 2, 112, 112, 112, 112, 112, 112, 1, 1, 1, 1, 1, 112, 112, 1, 1, 1, 1], ]  # 14
 gameDict["Lvl_1"]["key_pos"] = [(1017, 600), (20, 340), (750, 425), (400, 250)]
 # timer stuff
 playtimePerLvl = 100  # time in seconds
@@ -1076,6 +1077,7 @@ while continuer:
                 defaultLvl = i
                 main_menu = False
                 player_selection_menu = True
+                lvlButtons[i].clicked=False
         # Affichage du Texte
         texte.afficher()
         chooseLvlTxt.afficher()
@@ -1101,6 +1103,7 @@ while continuer:
                 fenetre.fill((0, 0, 0))
                 start_ticks = pygame.time.get_ticks()
                 pygame.display.flip()
+                playerButtons[i].clicked=False
         pygame.display.flip()
 
     elif game_paused:
@@ -1135,6 +1138,7 @@ while continuer:
             continuer = 0
         # reset time and stats here to restart the game
         if endScreenStartButton.clicked:
+            endScreenStartButton.clicked=False
             end_screen = False
             playtimePerLvl = timeConst
             start_ticks = pygame.time.get_ticks()
@@ -1147,6 +1151,7 @@ while continuer:
             main_menu = True
             defaultLvl = 0
         endScreenMessage.rect.centerx = fenetre.get_rect().centerx
+        endScreenMessage.rect.centery = fenetre.get_rect().centery
         endScreenMessage.afficher()
         endScreenStartButton.afficher()
         endScreenQuitButton.afficher()
@@ -1157,6 +1162,12 @@ while continuer:
         pygame.mixer.pause()
         if lvlPassed == -1:
             continuer = 0
+        elif lvlPassed == -2:
+            endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        elif lvlPassed == -3:
+            endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
         elif lvlPassed:
             defaultLvl = 1
             perso.rect.x = 5
@@ -1169,6 +1180,12 @@ while continuer:
         pygame.mixer.pause()
         if lvlPassed == -1:
             continuer = 0
+        elif lvlPassed == -2:
+            endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        elif lvlPassed == -3:
+            endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
         elif lvlPassed:
             defaultLvl = 2
         else:
