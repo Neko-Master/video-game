@@ -337,6 +337,8 @@ class Joueur(ElementAnimeDir):
         self.lives = 3
         self.vitesse = 5
         self.jumpspeed = 0
+        self.coins = 0
+        self.gems = 0
         self.jump = False
         self.invincible = False
 
@@ -428,7 +430,7 @@ class Balle(ElementAnime):
             self.dy = -self.dy
 
 
-def display_hud(fenetre, gem_count, coin_count, time, colorKeys={}):
+def display_hud(fenetre, time, colorKeys={}):
     a = 10
     for d in str(time):
         ElementGraphique(imageBank["number_" + d], fenetre, a, 5).afficher()
@@ -448,7 +450,7 @@ def display_hud(fenetre, gem_count, coin_count, time, colorKeys={}):
     ElementGraphique(imageBank["x_sign"], fenetre, 12 + imageBank["blue_gem_animated"][0].get_width(), 57).afficher()
     # startpos of the numbers
     a = 14 + imageBank["blue_gem_animated"][0].get_width() + imageBank["x_sign"].get_width()
-    for d in str(gem_count):
+    for d in str(perso.gems):
         ElementGraphique(imageBank["small_number_" + d], fenetre, a, 53).afficher()
         a = a + imageBank["small_number_" + d].get_width() + 1
     # coins
@@ -457,7 +459,7 @@ def display_hud(fenetre, gem_count, coin_count, time, colorKeys={}):
                      57 + imageBank["blue_gem_animated"][0].get_height()).afficher()
     # startpos of the numbers
     a = 20 + imageBank["coin_hud"].get_width() + imageBank["x_sign"].get_width()
-    for d in str(coin_count):
+    for d in str(perso.coins):
         ElementGraphique(imageBank["small_number_" + d], fenetre, a,
                          55 + imageBank["blue_gem_animated"][0].get_height()).afficher()
         a = a + imageBank["small_number_" + d].get_width() + 1
@@ -486,6 +488,8 @@ def level(lvlDict={}):
         mytiles["affectedByButton"] = []
         mytiles["switches"] = []
         mytiles["disapTiles"] = []
+        mytiles["gems"] = []
+        mytiles["coins"] = []
         switchCounter = 0
         platformCounter = 0
         nb_l = len(tileMap)
@@ -628,6 +632,13 @@ def level(lvlDict={}):
                                                  (50 * i) + 45,
                                                  3.5)
                     mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 78:
+                    mytiles["coins"].append(
+                        collectable(imageBank["spinning_coin"], soundBank["coin"], fenetre, 50 * j, 50 * i))
+                if tileMap[i][j] == 77:
+                    mytiles["gems"].append(
+                        collectable(imageBank["blue_gem_animated"], soundBank["gem"], fenetre, 50 * j, 50 * i))
+
         return mytiles
 
     tiles = createMap()
@@ -685,20 +696,20 @@ def level(lvlDict={}):
                 soundBank["doorOpens"].play()
             if tiles["door"].open and tiles["door"].rect.colliderect(perso.rect):
                 return True
-            for coin in coinArr:
+            for coin in tiles["coins"]:
                 if not coin.collected:
                     coin.afficher()
                 else:
-                    coins_collected = coins_collected + 1
-                    coinArr.remove(coin)
-            for gem in gemArr:
+                    perso.coins += 1
+                    tiles["coins"].remove(coin)
+            for gem in tiles["gems"]:
                 if not gem.collected:
                     gem.afficher()
                 else:
-                    player_gems = player_gems + 1
-                    gemArr.remove(gem)
+                    perso.gems += 1
+                    tiles["gems"].remove(gem)
             maxiExitButton.afficher()
-            display_hud(fenetre, player_gems, coins_collected, playtimePerLvl, colors)
+            display_hud(fenetre, playtimePerLvl, colors)
             pygame.display.flip()
             if pygame.event.get(25):
                 perso.invincible = False
@@ -711,7 +722,6 @@ def level(lvlDict={}):
                     tiles["disapTiles"][i].active = False
                     soundBank["switch"].play()
                 if pygame.event.get(61 + i):
-                    print("repaint tile")
                     tiles["disapTiles"][i].active = True
                     tiles["disapTiles"][i].timerRunning = False
                     soundBank["switch"].play()
@@ -893,10 +903,9 @@ class button_Platform(ElementGraphique):
 
 class disappearing_Platform(ElementGraphique):
     def __init__(self, img, fen, x, y, id, lifetime=3000):
-        print(id)
         self.lifetime = lifetime
         self.active = True
-        self.timerRunning=False
+        self.timerRunning = False
         self.id = id
         super().__init__(img, fen, x, y)
 
@@ -1006,44 +1015,36 @@ gameDict["Lvl_0"]["tile_map"] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0],  # 5
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
     [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0],  # 9
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
-    [92, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
-    [91, 10, 141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],  # 13
+    [92, 7, 77, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 7, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
+    [91, 10, 141, 0, 77, 0, 0, 0, 0, 0, 77, 0, 0, 0, 78, 0, 0, 141, 0, 0, 78, 0, 0, 78, 0, 0, 77, 0, 9],  # 13
     [1, 1, 1, 0, 0, 1111, 0, 1111, 0, 1111, 0, 0, 1111, 0, 1, 1, 1, 1, 1, 0, 0, 1111, 0, 0, 1, 1, 0, 0, 1], ]  # 14
 gameDict["Lvl_0"]["key_pos"] = [(1017, 575), (150, 600), (750, 550), (400, 600)]
 gameDict["Lvl_1"] = {}
 gameDict["Lvl_1"]["tile_map"] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
-    [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9],  # 3
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 4, 112, 3, 3],  # 4
-    [0, 0, 0, 0, 0, 0, 36, 0, 0, 4, 44, 0, 0, 0, 0, 0, 0, 112, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+    [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0],  # 2
+    [0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9],  # 3
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 0, 0, 78, 0, 0, 0, 0, 112, 0, 0, 4, 112, 3, 3],  # 4
+    [77, 0, 0, 0, 0, 0, 36, 0, 0, 4, 44, 0, 0, 0, 0, 0, 0, 112, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 77],  # 5
     [0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
-    [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
-    [16, 0, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+    [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0],  # 7
+    [16, 0, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 77, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0, 112, 0, 0, 0, 112, 0, 0, 112, 7, 6, 7, 0],  # 9
-    [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
+    [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78          , 0],  # 10
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
-    [92, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
+    [92, 7, 0, 77, 0, 0, 0, 0, 78, 0, 0, 0, 78, 7, 0, 0, 0, 0, 78, 0, 0, 0, 0, 77, 0, 7, 0, 0, 0],  # 12
     [91, 10, 0, 14, 0, 0, 0, 112, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
     [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
 gameDict["Lvl_1"]["key_pos"] = [(1017, 600), (20, 340), (750, 425), (400, 250)]
-for i in range(10):
-    posX = random.randint(100, 1300)
-    posY = random.randint(20, 600)
-    coinArr.append(collectable(imageBank["spinning_coin"], soundBank["coin"], fenetre, posX, posY))
-for i in range(10):
-    posX = random.randint(100, 1300)
-    posY = random.randint(20, 600)
-    gemArr.append(collectable(imageBank["blue_gem_animated"], soundBank["gem"], fenetre, posX, posY))
 # timer stuff
-playtimePerLvl = 150  # time in seconds
+playtimePerLvl = 100  # time in seconds
 timeConst = playtimePerLvl
 secondsPassed = 0
 timerBuffer = 0
@@ -1245,7 +1246,7 @@ while continuer:
                 player_gems = player_gems + 1
                 gemArr.remove(gem)
         ingameExitButton.afficher()
-        display_hud(fenetre, player_gems, coins_collected, playtimePerLvl)
+        display_hud(fenetre, playtimePerLvl)
         # rafraichissement
         pygame.display.flip()
 
