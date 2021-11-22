@@ -167,6 +167,8 @@ def lire_sounds():
     soundBank = {}
     soundBank["menu_music"] = pygame.mixer.Sound("Sounds/Menumusic.wav")
     soundBank["menu_music"].set_volume(0.25)
+    soundBank["lvl1"] = pygame.mixer.Sound("Sounds/lvl1_music.mp3")
+    soundBank["lvl1"].set_volume(0.25)
     soundBank["button_click"] = pygame.mixer.Sound("Sounds/buttonClick.flac")
     soundBank["button_click"].set_volume(0.3)
     soundBank["coin"] = pygame.mixer.Sound("Sounds/coin.wav")
@@ -184,7 +186,7 @@ def lire_sounds():
     soundBank["switch"] = pygame.mixer.Sound("Sounds/switch_sound.ogg")
     soundBank["switch"].set_volume(0.2)
     soundBank["ticking_clock"] = pygame.mixer.Sound("Sounds/ticking_clock.wav")
-    soundBank["ticking_clock"].set_volume(0.35)# 8 seconds long
+    soundBank["ticking_clock"].set_volume(0.35)  # 8 seconds long
     return soundBank
 
 
@@ -337,8 +339,10 @@ class Joueur(ElementAnimeDir):
         self.lives = 3
         self.vitesse = 5
         self.jumpspeed = 0
+        self.coins = 0
+        self.gems = 0
         self.jump = False
-        self.invincible=False
+        self.invincible = False
 
     def deplacer(self, tilelist=[]):
         # on recupere l'etat du clavier
@@ -355,15 +359,11 @@ class Joueur(ElementAnimeDir):
                 new_rect.x += -self.vitesse
             if (touches[pygame.K_SPACE] or touches[
                 pygame.K_UP] or touches[
-                    pygame.K_w]) and self.jump == False and self.jumpspeed == 15:  # the last condition prevents doublejumps
+                    pygame.K_w]) and self.jump == False:
                 self.direction = "haut"
-                self.jumpspeed = -11
+                self.jumpspeed = -12
                 self.jump = True
                 soundBank["jump"].play()
-            if not (touches[pygame.K_SPACE] and touches[
-                pygame.K_UP] and touches[
-                        pygame.K_w]):
-                self.jump = False
 
         # gravity
         self.jumpspeed += 1  # this controls how fast the plyer falls down
@@ -390,11 +390,12 @@ class Joueur(ElementAnimeDir):
                     # falling
                     elif self.jumpspeed >= 0:
                         new_rect.y = tile.rect.top - self.rect.height
+                        self.jump = False  # player has to touch floor too jump
         self.rect = new_rect
         # keep player onscreen
         # bottom
-        if self.rect.bottom > fenetre.get_height():
-            self.rect.bottom = fenetre.get_height()
+        if self.rect.top > fenetre.get_height():
+            self.lives = 0
         # right
         if self.rect.right > fenetre.get_width():
             self.rect.right = fenetre.get_width()
@@ -431,7 +432,7 @@ class Balle(ElementAnime):
             self.dy = -self.dy
 
 
-def display_hud(fenetre, gem_count, coin_count, time, colorKeys={}):
+def display_hud(fenetre, time, colorKeys={}):
     a = 10
     for d in str(time):
         ElementGraphique(imageBank["number_" + d], fenetre, a, 5).afficher()
@@ -451,7 +452,7 @@ def display_hud(fenetre, gem_count, coin_count, time, colorKeys={}):
     ElementGraphique(imageBank["x_sign"], fenetre, 12 + imageBank["blue_gem_animated"][0].get_width(), 57).afficher()
     # startpos of the numbers
     a = 14 + imageBank["blue_gem_animated"][0].get_width() + imageBank["x_sign"].get_width()
-    for d in str(gem_count):
+    for d in str(perso.gems):
         ElementGraphique(imageBank["small_number_" + d], fenetre, a, 53).afficher()
         a = a + imageBank["small_number_" + d].get_width() + 1
     # coins
@@ -460,7 +461,7 @@ def display_hud(fenetre, gem_count, coin_count, time, colorKeys={}):
                      57 + imageBank["blue_gem_animated"][0].get_height()).afficher()
     # startpos of the numbers
     a = 20 + imageBank["coin_hud"].get_width() + imageBank["x_sign"].get_width()
-    for d in str(coin_count):
+    for d in str(perso.coins):
         ElementGraphique(imageBank["small_number_" + d], fenetre, a,
                          55 + imageBank["blue_gem_animated"][0].get_height()).afficher()
         a = a + imageBank["small_number_" + d].get_width() + 1
@@ -476,28 +477,22 @@ def display_hud(fenetre, gem_count, coin_count, time, colorKeys={}):
         y = y + 30
 
 
-def maxiLvl():
-    global player_gems, coins_collected
-    tileMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
-               [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 12, 9, 0],  # 3
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 3, 0],  # 4
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
-               [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
-               [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0],  # 9
-               [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
-               [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
-               [0, 10, 0, 0, 0, 0, 0, 3, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 12, 12, 0, 0, 0, 0, 0, 0, 0],  # 13
-               [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ]  # 14
+def level(lvlDict={}):
+    if not lvlDict:
+        return False
+    tileMap = lvlDict["tile_map"]
 
     def createMap():
         mytiles = {}
         mytiles["tileList"] = []
         mytiles["styleTileList"] = []
-        mytiles["spikesList"] = []
+        mytiles["affectedByButton"] = []
+        mytiles["switches"] = []
+        mytiles["disapTiles"] = []
+        mytiles["gems"] = []
+        mytiles["coins"] = []
+        switchCounter = 0
+        platformCounter = 0
         nb_l = len(tileMap)
         nb_c = len(tileMap[0])
         sprite = imageBank["all_tiles"]
@@ -507,15 +502,59 @@ def maxiLvl():
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
                                          y=50 * i))
+                if tileMap[i][j] == 1111:
+                    mytiles["affectedByButton"].append(
+                        button_Platform(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
+                                        y=50 * i))
+                if tileMap[i][j] == 112:
+                    platformCounter += 1
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfMid.png"), (0, 0),
+                                 (0, 0, 50, 30))
+                    cropped.set_alpha(150)
+                    newPlat = disappearing_Platform(cropped, fenetre, x=50 * j,
+                                                    y=50 * i, lifetime=1500, id=platformCounter)
+                    mytiles["disapTiles"].append(newPlat)
+                if tileMap[i][j] == 111:
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
+                                         y=(50 * i) - 21))
                 if tileMap[i][j] == 2:
                     mytiles["tileList"].append(lava(fenetre, x=50 * j, y=50 * i))
                 if tileMap[i][j] == 3:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfMid.png"), (0, 0),
+                                 (0, 0, 50, 30))
                     mytiles["tileList"].append(
-                        ElementGraphique(sprite.get_image_name("castleHalfMid.png"), fenetre, x=50 * j,
+                        ElementGraphique(cropped, fenetre, x=50 * j, y=50 * i))
+                if tileMap[i][j] == 33:
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleHalf.png"), fenetre, x=50 * j,
                                          y=50 * i))
+                if tileMap[i][j] == 34:
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleHalf.png"), fenetre, x=50 * j,
+                                         y=(50 * i) - 20))
+                if tileMap[i][j] == 35:
+                    platformCounter += 1
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfMid.png"), (0, 0),
+                                 (0, 0, 50, 30))
+                    cropped.set_alpha(150)
+                    newPlat = disappearing_Platform(cropped, fenetre, x=50 * j,
+                                                    y=(50 * i) + 15, lifetime=1500, id=platformCounter)
+                    mytiles["disapTiles"].append(newPlat)
+                if tileMap[i][j] == 36:
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleHalf.png"), fenetre, x=(50 * j) - 10,
+                                         y=(50 * i) + 5))
                 if tileMap[i][j] == 4:
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleHalfLeft.png"), fenetre, x=50 * j,
+                                         y=50 * i))
+                if tileMap[i][j] == 44:
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleHalfRight.png"), fenetre, x=50 * j,
                                          y=50 * i))
                 if tileMap[i][j] == 5:
                     mytiles["tileList"].append(
@@ -538,6 +577,14 @@ def maxiLvl():
                     door = Door(fenetre, x=50 * j, y=(50 * i) - 30)
                     mytiles["styleTileList"].append(door)
                     mytiles["door"] = door
+                if tileMap[i][j] == 91:
+                    mytiles["styleTileList"].append(
+                        ElementGraphique(sprite.get_image_name("door_openMid.png"), fenetre, x=50 * j,
+                                         y=(50 * i)))
+                if tileMap[i][j] == 92:
+                    mytiles["styleTileList"].append(
+                        ElementGraphique(sprite.get_image_name("door_openTop.png"), fenetre, x=50 * j,
+                                         y=(50 * i)))
                 if tileMap[i][j] == 10:
                     mytiles["styleTileList"].append(
                         ElementGraphique(sprite.get_image_name("signRight.png"), fenetre, x=50 * j,
@@ -552,12 +599,52 @@ def maxiLvl():
                 if tileMap[i][j] == 12:
                     newSpike = spikes(fenetre, x=50 * j, y=50 * i)
                     mytiles["styleTileList"].append(newSpike)
-                    mytiles["spikesList"].append(newSpike)
+                if tileMap[i][j] == 13:
+                    newSpike = spikes(fenetre, x=50 * j, y=50 * i)
+                    mytiles["affectedByButton"].append(newSpike)
+                if tileMap[i][j] == 14:
+                    switchCounter += 1
+                    passive = pygame.Surface((50, 35), pygame.SRCALPHA)
+                    passive.blit(imageBank["all_items"].get_image_name("buttonBlue.png"), (0, 0), (0, 15, 50, 35))
+                    active = pygame.Surface((50, 35), pygame.SRCALPHA)
+                    active.blit(imageBank["all_items"].get_image_name("buttonBlue_pressed.png"), (0, 0),
+                                (0, 15, 50, 35))
+                    newSwitch = switch(fenetre, 50 * j, (50 * i) + 15, active, passive, switchCounter)
+                    mytiles["switches"].append(newSwitch)
+                if tileMap[i][j] == 141:
+                    switchCounter += 1
+                    passive = pygame.Surface((50, 35), pygame.SRCALPHA)
+                    passive.blit(imageBank["all_items"].get_image_name("buttonBlue.png"), (0, 0), (0, 15, 50, 35))
+                    active = pygame.Surface((50, 35), pygame.SRCALPHA)
+                    active.blit(imageBank["all_items"].get_image_name("buttonBlue_pressed.png"), (0, 0),
+                                (0, 15, 50, 35))
+                    newSwitch = switch_display_stuff(fenetre, 50 * j, (50 * i) + 15, active, passive, switchCounter)
+                    mytiles["switches"].append(newSwitch)
+                if tileMap[i][j] == 15:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfLeft.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, 50 * j, (50 * i) + 20, (50 * i) - 300, 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 16:
+                    cropped = pygame.Surface((100, 20), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (0, 0), (0, 32, 50, 20))
+                    cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (50, 0), (0, 32, 50, 20))
+                    newPlatform = movingPlatform(cropped, fenetre, (50 * j), (50 * j) + 550, (50 * i) + 45,
+                                                 (50 * i) + 45,
+                                                 3.5)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 78:
+                    mytiles["coins"].append(
+                        collectable(imageBank["spinning_coin"], soundBank["coin"], fenetre, 50 * j, 50 * i))
+                if tileMap[i][j] == 77:
+                    mytiles["gems"].append(
+                        collectable(imageBank["blue_gem_animated"], soundBank["gem"], fenetre, 50 * j, 50 * i))
+
         return mytiles
 
     tiles = createMap()
     colors = {"Red": 0, "Yellow": 0, "Blue": 0, "Green": 0}
-    keyPos = [(1025, 600), (20, 340), (1300, 300), (400, 250)]  # TODO adapt good positions
+    keyPos = lvlDict["key_pos"]
     keys = {}
     i = 0
     for color, value in colors.items():
@@ -567,51 +654,97 @@ def maxiLvl():
                         keyPos[i][0], keyPos[i][1]))
         i += 1
     continuer = True
+    pause = False
+    blurry = False
+    timeBuff = 0
+    timePassed = 0
     horologeMaxi = pygame.time.Clock()
+    start_time = pygame.time.get_ticks()
     while continuer:
-        horologeMaxi.tick(30)
-        secondsPassed = int(
-            timerBuffer + (pygame.time.get_ticks() - start_ticks) / 1000)  # calculate how many seconds played
-        if secondsPassed >= timeConst or ingameExitButton.clicked == 1 or perso.lives <= 0:  # you have 300s to reach the end of the lvl
-            return False
-        playtimePerLvl = timeConst - secondsPassed
-        for fonds in fondarr:
-            fonds.afficher()
-        for tile in tiles["tileList"]:
-            tile.afficher()
-        keyCounter = 0
-        for color, value in keys.items():
-            if value.collected:
-                colors[color] = 1
-                keyCounter += 1
-            else:
-                value.afficher()
-        for tile in tiles["styleTileList"]:
-            tile.afficher()
-        perso.afficher()
-        perso.deplacer(tiles["tileList"])
-        if keyCounter == 4 and tiles["door"].open == False:
-            tiles["door"].open = True
-            soundBank["doorOpens"].play()
-        if tiles["door"].open and tiles["door"].rect.colliderect(perso.rect):
-            return True
-        for coin in coinArr:
-            if not coin.collected:
-                coin.afficher()
-            else:
-                coins_collected = coins_collected + 1
-                coinArr.remove(coin)
-        for gem in gemArr:
-            if not gem.collected:
-                gem.afficher()
-            else:
-                player_gems = player_gems + 1
-                gemArr.remove(gem)
-        ingameExitButton.afficher()
-        display_hud(fenetre, player_gems, coins_collected, playtimePerLvl, colors)
-        pygame.display.flip()
-        if pygame.event.get(25):  # check event queue contains PLAYSOUNDEVENT
-            perso.invincible=False
+        if maxiExitButton.clicked:
+            pause = True
+        if not pause:
+            horologeMaxi.tick(30)
+            timePassed = int(
+                timeBuff + (pygame.time.get_ticks() - start_time) / 1000)  # calculate how many seconds played
+            if timePassed >= timeConst:
+                return -2
+            if perso.lives <= 0:
+                return -3
+            playtimePerLvl = timeConst - timePassed
+            for fonds in fondarr:
+                fonds.afficher()
+            for tile in tiles["tileList"]:
+                tile.afficher()
+            for tile in tiles["disapTiles"]:
+                tile.afficher()
+            keyCounter = 0
+            for color, value in keys.items():
+                if value.collected:
+                    colors[color] = 1
+                    keyCounter += 1
+                else:
+                    value.afficher()
+            for tile in tiles["styleTileList"]:
+                tile.afficher()
+            for switchElem in tiles["switches"]:  # every switch needs the elements he turns on off
+                switchElem.afficher(tiles["affectedByButton"])
+            perso.afficher()
+            perso.deplacer(tiles["tileList"])
+            if keyCounter == 4 and tiles["door"].open == False:
+                tiles["door"].open = True
+                soundBank["doorOpens"].play()
+            if tiles["door"].open and tiles["door"].rect.colliderect(perso.rect):
+                return True
+            for coin in tiles["coins"]:
+                if not coin.collected:
+                    coin.afficher()
+                else:
+                    perso.coins += 1
+                    tiles["coins"].remove(coin)
+            for gem in tiles["gems"]:
+                if not gem.collected:
+                    gem.afficher()
+                else:
+                    perso.gems += 1
+                    tiles["gems"].remove(gem)
+            maxiExitButton.afficher()
+            display_hud(fenetre, playtimePerLvl, colors)
+            pygame.display.flip()
+            if pygame.event.get(25):
+                perso.invincible = False
+            for i in range(len(tiles["switches"])):
+                if pygame.event.get(26 + i):
+                    tiles["switches"][i].active = False
+                    soundBank["switch"].play()
+            for i in range(len(tiles["disapTiles"])):
+                if pygame.event.get(31 + i):
+                    tiles["disapTiles"][i].active = False
+                    soundBank["switch"].play()
+                if pygame.event.get(61 + i):
+                    tiles["disapTiles"][i].active = True
+                    tiles["disapTiles"][i].timerRunning = False
+                    soundBank["switch"].play()
+        else:
+            # stop the timer while game is paused
+            timeBuff = timePassed
+            if not blurry:
+                blurrScreen.afficher()
+                blurry = True
+                pygame.mixer.music.pause()
+            pauseText.afficher()
+            pygame.display.flip()
+            # another cool way to use buttons
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_y:
+                        return -1
+                    if event.key == pygame.K_n:
+                        pygame.mixer.music.unpause()
+                        pause = False
+                        start_time = pygame.time.get_ticks()
+                        maxiExitButton.clicked = False
+                        blurry = False
 
 
 pygame.init()  # Initialisation de la bibliotheque pygame
@@ -658,18 +791,134 @@ class lava(ElementGraphique):
 
 class spikes(ElementGraphique):
     def __init__(self, fen, x=0, y=0):
-        super().__init__(imageBank["all_items"].get_image_name("spikes.png"), fen, x, y)
+        cropped = pygame.Surface((50, 23), pygame.SRCALPHA)
+        cropped.blit(imageBank["all_items"].get_image_name("spikes.png"), (0, 0), (0, 27, 50, 23))
+        self.collideRect = pygame.rect.Rect((0, 0), (40, 15))
+        super().__init__(cropped, fen, x, y + 28)
 
     def afficher(self):
-        if self.rect.colliderect(perso.rect) and not perso.invincible:
-            if(self.rect.x<perso.rect.x):
-                perso.rect.x+=50
+        self.collideRect.center = self.rect.center
+        if self.collideRect.colliderect(perso.rect) and not perso.invincible:
+            if self.rect.x < perso.rect.x:
+                perso.rect.x += 50
             else:
                 perso.rect.x -= 50
+            perso.rect.y -= 35
             perso.lives -= 1
-            perso.invincible=True
-            pygame.time.set_timer(25,300,1)
+            perso.invincible = True
+            pygame.time.set_timer(25, 300, 1)
         super().afficher()
+        return self
+
+
+class switch(ElementGraphique):
+    def __init__(self, fen, x, y, imgAct, imgNAct, num=1, time=8000):
+        self.imageActive = imgAct
+        self.imageNotActive = imgNAct
+        self.active = False
+        self.number = num
+        self.time = time
+        super().__init__(self.imageNotActive, fen, x, y)
+
+    def afficher(self, thingToActivate=[]):  # last element is the stuff u want to be influenced by the switch
+        if self.rect.colliderect(perso.rect) and self.rect.y - self.rect.height > perso.rect.y and not self.active:
+            self.active = True
+            perso.rect.y -= 30
+            soundBank["switch"].play()
+            pygame.time.set_timer(25 + self.number, self.time, 1)  # unswitch the switch after 8 seconds
+            soundBank["ticking_clock"].play()
+        if self.active:
+            self.fenetre.blit(self.imageActive, self.rect)
+        else:
+            self.fenetre.blit(self.imageNotActive, self.rect)
+            for tta in thingToActivate:
+                tta.afficher()
+        return self
+
+
+class switch_display_stuff(ElementGraphique):
+    def __init__(self, fen, x, y, imgAct, imgNAct, num=1, time=8000):
+        self.imageActive = imgAct
+        self.imageNotActive = imgNAct
+        self.active = False
+        self.number = num
+        self.time = time
+        super().__init__(self.imageNotActive, fen, x, y)
+
+    def afficher(self, thingToActivate=[]):  # last element is the stuff u want to be influenced by the switch
+        if self.rect.colliderect(perso.rect) and self.rect.y - self.rect.height > perso.rect.y and not self.active:
+            self.active = True
+            perso.rect.y -= 30
+            soundBank["switch"].play()
+            pygame.time.set_timer(25 + self.number, self.time, 1)  # unswitch the switch after 8 seconds
+            soundBank["ticking_clock"].play()
+        if self.active:
+            self.fenetre.blit(self.imageActive, self.rect)
+            for tta in thingToActivate:
+                tta.afficher()
+        else:
+            self.fenetre.blit(self.imageNotActive, self.rect)
+        return self
+
+
+class movingPlatform(ElementGraphique):
+    def __init__(self, img, fen, xStart=0, xEnd=0, yStart=0, yEnd=0, movingspeed=1):
+        self.xStart = xStart
+        self.xEnd = xEnd
+        self.yStart = yStart
+        self.yEnd = yEnd
+        self.speed = movingspeed
+        self.xDirection = 1  # left->right
+        self.yDirection = -1  # bottom->top
+        super().__init__(img, fen, xStart, yStart)
+
+    def afficher(self):
+        if self.xStart != self.xEnd:
+            self.rect.x += self.xDirection * self.speed
+            if self.rect.colliderect(perso.rect) and self.rect.y - self.rect.height > perso.rect.y:
+                perso.rect.x = self.rect.x
+            if self.rect.x > self.xEnd or self.rect.x < self.xStart:
+                self.xDirection *= -1
+        if self.yStart != self.yEnd:
+            self.rect.y += self.yDirection * self.speed
+            if self.rect.colliderect(perso.rect) and self.rect.y - self.rect.height > perso.rect.y:
+                perso.rect.y = self.rect.y - perso.rect.height
+            if self.rect.y < self.yEnd or self.rect.y > self.yStart:
+                self.yDirection *= -1
+        super().afficher()
+        return self
+
+
+class button_Platform(ElementGraphique):
+    def __init__(self, img, fen, x, y):
+        super().__init__(img, fen, x, y)
+
+    def afficher(self):
+        if self.rect.colliderect(perso.rect):
+            perso.rect.bottom = self.rect.top
+            perso.jump = False
+        super().afficher()
+        return self
+
+
+class disappearing_Platform(ElementGraphique):
+    def __init__(self, img, fen, x, y, id, lifetime=3000):
+        self.lifetime = lifetime
+        self.active = True
+        self.timerRunning = False
+        self.id = id
+        super().__init__(img, fen, x, y)
+
+    def afficher(self):
+        if self.rect.colliderect(perso.rect) and self.active:
+            perso.rect.bottom = self.rect.top
+            perso.jump = False
+            if not self.timerRunning:
+                self.timerRunning = True
+                pygame.time.set_timer(30 + self.id, self.lifetime, 1)
+                pygame.time.set_timer(60 + self.id, self.lifetime + 1000, 1)
+        if self.active:
+            super().afficher()
         return self
 
 
@@ -691,14 +940,16 @@ for i in range(4):
                fenetre.get_rect().centery - 100))
 ingameExitButton = Button(imageBank["exit_button"], fenetre,
                           fenetre.get_width() - imageBank["exit_button"].get_width() - 3, 5)
+maxiExitButton = Button(imageBank["exit_button"], fenetre,
+                        fenetre.get_width() - imageBank["exit_button"].get_width() - 3, 5)
 menuStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_rect().centerx - 150,
                          fenetre.get_rect().centery - 100)
 menuQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
                         fenetre.get_rect().centery - 100)
 endScreenStartButton = Button(imageBank["start_button"], fenetre, fenetre.get_rect().centerx - 150,
-                              fenetre.get_rect().centery - 100)
+                              fenetre.get_rect().centery + 150)
 endScreenQuitButton = Button(imageBank["quit_button"], fenetre, fenetre.get_rect().centerx + 50,
-                             fenetre.get_rect().centery - 100)
+                             fenetre.get_rect().centery + 150)
 lvlButtons = []
 for i in range(3):
     lvlButtons.append(Button(imageBank["number_" + str(i)], fenetre, 435 + (i * 50), 500))
@@ -757,16 +1008,43 @@ player_gems = 0
 coins_collected = 0
 coinArr = []
 gemArr = []
-for i in range(10):
-    posX = random.randint(100, 1300)
-    posY = random.randint(20, 600)
-    coinArr.append(collectable(imageBank["spinning_coin"], soundBank["coin"], fenetre, posX, posY))
-for i in range(10):
-    posX = random.randint(100, 1300)
-    posY = random.randint(20, 600)
-    gemArr.append(collectable(imageBank["blue_gem_animated"], soundBank["gem"], fenetre, posX, posY))
+gameDict = {}
+gameDict["Lvl_0"] = {}
+gameDict["Lvl_0"]["tile_map"] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+    [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0],  # 5
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+    [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0],  # 9
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
+    [92, 7, 77, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 7, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0],  # 12
+    [91, 10, 141, 0, 77, 0, 0, 0, 0, 0, 77, 0, 0, 0, 78, 0, 0, 141, 0, 0, 78, 0, 0, 78, 0, 0, 77, 0, 9],  # 13
+    [1, 1, 1, 0, 0, 1111, 0, 1111, 0, 1111, 0, 0, 1111, 0, 1, 1, 1, 1, 1, 0, 0, 1111, 0, 0, 1, 1, 0, 0, 1], ]  # 14
+gameDict["Lvl_0"]["key_pos"] = [(1017, 575), (150, 600), (750, 550), (400, 600)]
+gameDict["Lvl_1"] = {}
+gameDict["Lvl_1"]["tile_map"] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+    [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0],  # 2
+    [0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9],  # 3
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 0, 0, 78, 0, 0, 0, 0, 112, 0, 0, 4, 112, 3, 3],  # 4
+    [77, 0, 0, 0, 0, 0, 36, 0, 0, 4, 44, 0, 0, 0, 0, 0, 0, 112, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 77],  # 5
+    [0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+    [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0],  # 7
+    [16, 0, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 77, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0, 112, 0, 0, 0, 112, 0, 0, 112, 7, 6, 7, 0],  # 9
+    [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0],  # 10
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
+    [92, 7, 0, 77, 0, 0, 0, 0, 78, 0, 0, 0, 78, 7, 0, 0, 0, 0, 78, 0, 0, 0, 0, 77, 0, 7, 0, 0, 0],  # 12
+    [91, 10, 0, 14, 0, 0, 0, 112, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
+    [1, 1, 1, 1, 1, 112, 2, 2, 2, 2, 2, 2, 112, 112, 112, 112, 112, 112, 1, 1, 1, 1, 1, 112, 112, 1, 1, 1, 1], ]  # 14
+gameDict["Lvl_1"]["key_pos"] = [(1017, 600), (20, 340), (750, 425), (400, 250)]
 # timer stuff
-playtimePerLvl = 300  # time in seconds
+playtimePerLvl = 100  # time in seconds
 timeConst = playtimePerLvl
 secondsPassed = 0
 timerBuffer = 0
@@ -791,12 +1069,14 @@ while continuer:
             player_selection_menu = True
             fenetre.fill((0, 0, 0))
             pygame.display.flip()
+            menuStartButton.clicked = False
         for i in range(lvlButtons.__len__()):
             lvlButtons[i].afficher()
             if lvlButtons[i].clicked:
                 defaultLvl = i
                 main_menu = False
                 player_selection_menu = True
+                lvlButtons[i].clicked=False
         # Affichage du Texte
         texte.afficher()
         chooseLvlTxt.afficher()
@@ -816,12 +1096,13 @@ while continuer:
             playerButtons[i].afficher()
             if playerButtons[i].clicked:
                 defaultPlayer = i + 1
-                perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 5, 500)  # 5,600 for maxi Lvl
+                perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 5, 600)  # 5,600 for maxi Lvl
                 player_selection_menu = False
                 lvlMaxi = True
                 fenetre.fill((0, 0, 0))
                 start_ticks = pygame.time.get_ticks()
                 pygame.display.flip()
+                playerButtons[i].clicked=False
         pygame.display.flip()
 
     elif game_paused:
@@ -856,6 +1137,7 @@ while continuer:
             continuer = 0
         # reset time and stats here to restart the game
         if endScreenStartButton.clicked:
+            endScreenStartButton.clicked=False
             end_screen = False
             playtimePerLvl = timeConst
             start_ticks = pygame.time.get_ticks()
@@ -865,15 +1147,50 @@ while continuer:
             perso.lives = 3
             ingameExitButton.clicked = False
             lvlMusicPlaying = False
+            main_menu = True
+            defaultLvl = 0
         endScreenMessage.rect.centerx = fenetre.get_rect().centerx
+        endScreenMessage.rect.centery = fenetre.get_rect().centery
         endScreenMessage.afficher()
         endScreenStartButton.afficher()
         endScreenQuitButton.afficher()
         pygame.display.flip()
+    elif defaultLvl == 0:
+        #soundBank["menu_music"].stop()
+        lvlPassed = level(gameDict["Lvl_0"])
+        pygame.mixer.pause()
+        if lvlPassed == -1:
+            continuer = 0
+        elif lvlPassed == -2:
+            endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        elif lvlPassed == -3:
+            endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        elif lvlPassed:
+            defaultLvl = 1
+            perso.rect.x = 5
+            perso.rect.y = 600
+        else:
+            end_screen = True
     elif defaultLvl == 1:
-        lvlPassed = maxiLvl()  # TODO here you would go to lvl 2 or the endscreen
-        defaultLvl = 0
-        end_screen = True
+        soundBank["menu_music"].stop()
+        pygame.mixer.music.load("Sounds/lvl1_music.mp3")
+        pygame.mixer.music.play()
+        lvlPassed = level(gameDict["Lvl_1"])
+        pygame.mixer.pause()
+        if lvlPassed == -1:
+            continuer = 0
+        elif lvlPassed == -2:
+            endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        elif lvlPassed == -3:
+            endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        elif lvlPassed:
+            defaultLvl = 2
+        else:
+            end_screen = True
     else:
         soundBank["menu_music"].stop()
         if not lvlMusicPlaying:
@@ -947,7 +1264,7 @@ while continuer:
                 player_gems = player_gems + 1
                 gemArr.remove(gem)
         ingameExitButton.afficher()
-        display_hud(fenetre, player_gems, coins_collected, playtimePerLvl)
+        display_hud(fenetre, playtimePerLvl)
         # rafraichissement
         pygame.display.flip()
 
