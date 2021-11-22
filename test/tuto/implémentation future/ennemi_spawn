@@ -16,6 +16,42 @@ class Balle(ElementAnime):
                     y.append(j*50)
 
 
+
+
         super().__init__(img,fen,x[z],y[z])
 
         self.dx = random.randint(-5,5)
+
+
+
+
+
+
+
+
+        class Balle(ElementAnime):
+            def __init__(self, img, fen):
+
+                w, h = fen.get_size()
+
+                x = random.randint(0, w)
+                y = random.randint(0, h)
+
+                super().__init__(img, fen, x, y)
+
+                self.dx = random.randint(-5, 5)
+                self.dy = random.randint(-5, 5)
+
+            def deplacer(self):
+                self.rect.x += self.dx
+                self.rect.y += self.dy
+
+                w, h = self.fenetre.get_size()
+
+                # a gauche ou droite
+                if self.rect.x < 0 or self.rect.x + self.rect.w > w:
+                    self.dx = -self.dx
+
+                # en haut ou bas
+                if self.rect.y < 0 or self.rect.y + self.rect.h > h:
+                    self.dy = -self.dy

@@ -314,7 +314,7 @@ class Joueur(ElementAnimeDir):
             self.rect = new_rect
 
 
-class Balle(ElementAnime):
+class Badguys(ElementAnime):
     def __init__(self, img, fen, maMap):
 
         x = []
@@ -335,6 +335,72 @@ class Balle(ElementAnime):
         super().__init__(img,fen,x[z],y[z])
 
         self.dx = random.randint(-5,5)
+
+class world():
+              def __init__(self, fen):
+                  self.fen = fen
+                  self.maMap =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0],  # 9
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
+                           [0, 0, 0, 2, 3, 3, 4, 0, 6, 0, 5, 5, 5, 5, 0, 6, 0, 0, 6, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0, 0],  # 11
+                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0],  # 12
+                           [2, 3, 4, 0, 0, 0, 0, 2, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 3, 3, 3, 4],  # 13
+                           [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],  # 14
+                           ]
+
+            def afficher(self):
+                # Afficher tous les murs
+                nb_l = len(self.maMap)
+                nb_c = len(self.maMap[0])
+                for i in range(nb_l):
+                    for j in range(nb_c):
+                        if self.maMap[i][j] == 1:
+                            mur = ElementGraphique(imageBank["mur"], fenetre, x=50 * j, y=50 * i)
+                            mur.afficher()
+                    for j in range(nb_c):
+                        if self.maMap[i][j] == 2:
+                            mur = ElementGraphique(imageBank["solleft"], fenetre, x=50 * j, y=50 * i)
+                            mur.afficher()
+                    for j in range(nb_c):
+                        if self.maMap[i][j] == 3:
+                            mur = ElementGraphique(imageBank["sol"], fenetre, x=50 * j, y=50 * i)
+                            mur.afficher()
+                    for j in range(nb_c):
+                        if self.maMap[i][j] == 4:
+                            mur = ElementGraphique(imageBank["solright"], fenetre, x=50 * j, y=50 * i)
+                            mur.afficher()
+                    for j in range(nb_c):
+                        if self.maMap[i][j] == 5:
+                            mur = ElementGraphique(imageBank["dirt"], fenetre, x=50 * j, y=50 * i)
+                            mur.afficher()
+
+            def collide_map(self, un_rect):
+                # haut
+                irect = un_rect.y // 50
+                jrect = int(un_rect.x / 50)
+
+                if (self.maMap[irect][jrect] != 0):
+                    return True
+
+                # bas
+                irect = (un_rect.y + un_rect.h) // 50
+                jrect = int(un_rect.x / 64)
+
+                if (self.maMap[irect][jrect] != 0):
+                    return True
+
+                return False
+            super(world,._
+            _init__()
+            self.arg = arg
+
 
 
 def display_hud(fenetre, lives, gem_count, coin_count, time):
@@ -454,8 +520,8 @@ maMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 mechant = []
 for i in range(4):
-    balle = Balle(imageBank["flame"], fenetre,maMap)
-    mechant.append(balle)
+    bad = Badguys(imageBank["flame"], fenetre,maMap)
+    mechant.append(bad)
 
 
 # servira a regler l'horloge du jeu
@@ -612,19 +678,19 @@ while continuer:
         else :
             print("libre")
         '''
-        for e in mes_balles:
+        for e in mechant:
         e.deplacer()
 
 
         # collisions avec les balles
         '''
-        for b in mes_balles:
+        for b in mechant:
             if perso.contact(b) :
                 continuer = 0
         '''
         '''
-        for b in mes_balles:
-            for bb in mes_balles:
+        for b in mechant:
+            for bb in mechant:
                 if b != bb and b.contact(bb) :
                     b.dx = -b.dx
                     b.dy = -b.dy
