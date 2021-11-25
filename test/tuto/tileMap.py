@@ -134,9 +134,7 @@ for i in range(nb_l):
             cropped = pygame.Surface((100, 20), pygame.SRCALPHA)
             cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (0, 0), (0, 32, 50, 20))
             cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (50, 0), (0, 32, 50, 20))
-            newPlatform = movingPlatform(cropped, fenetre, (50 * j), (50 * j) + 550, (50 * i) + 45,
-                                         (50 * i) + 45,
-                                         3.5)
+            newPlatform = movingPlatform(cropped, fenetre, (50 * j), (50 * j) + 550, (50 * i) + 45,(50 * i) + 45,3.5)
             mytiles["tileList"].append(newPlatform)
         if tileMap[i][j] == 78:
             mytiles["coins"].append(
@@ -146,6 +144,43 @@ for i in range(nb_l):
                 collectable(imageBank["blue_gem_animated"], soundBank["gem"], fenetre, 50 * j, 50 * i))
 
 return mytiles
+
+#ennemi
+mechant = []
+nb_l = len(World.maMap)
+nb_c = len(World.maMap[0])
+for i in range(nb_l):
+    for j in range (nb_c):
+        if World.maMap[i][j]==6:
+            bad = Badguys(imageBank["flame"], fenetre, x=50 * j, y=50 * i)
+            mechant.append(bad)
+
+
+
+class Badguys(ElementAnime):
+
+    def __init__(self, img, fen, x, y):
+
+        super().__init__(img,fen,x,y)
+
+        self.dx = random.randint(-5,5)
+    #new_badrect=0
+
+    def deplacer(self,world):
+        new_badrect= copy.deepcopy(self.rect)
+        #new_badrect= self.rect.x
+        if world.collide_map(new_badrect):
+            self.dx = -self.dx
+            new_badrect.x += self.dx
+            self.rect.x = new_badrect.x
+        else :
+            new_badrect.x += self.dx
+            self.rect.x = new_badrect.x
+
+    def end(self, fen):
+        w, h = self.fenetre.get_size()
+        if self.rect.x == perso.rect.x:
+            del mechant[self]
 
 
 
@@ -183,16 +218,16 @@ return mytiles
  [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 92, 0],  # 3
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 91, 0],  # 4
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0],  # 3
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 9, 0],  # 4
     [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],  # 5
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
     [1, 1, , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
     [1, 1, 1, 1, 1, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],  # 9
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 12
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 12
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0],  # 13
     [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], ]
 

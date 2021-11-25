@@ -25,6 +25,5 @@ class SpriteSheet:
         return self.spritesheet.subsurface(pygame.Rect(x, y, w, h))
     #default tile size is 50*50 but can changed how you like
     def get_image_name(self, name, width=50,height=50):
-        rect = pygame.Rect(self.map[name]['x'], self.map[name]['y'],
-                       self.map[name]['width'], self.map[name]['height'])
+        rect = pygame.Rect(self.map[name]['x'], self.map[name]['y'], self.map[name]['width'], self.map[name]['height'])
         return pygame.transform.scale(self.spritesheet.subsurface(rect),(width,height))

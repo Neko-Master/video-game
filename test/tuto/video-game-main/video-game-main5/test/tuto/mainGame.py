@@ -160,10 +160,10 @@ def lire_images():
         "Images/Animations/platformerGraphics_otherStyle/Items/items_spritesheet.png",
         "Images/Animations/platformerGraphics_otherStyle/Items/items_spritesheet.xml")
     imageBank["all_items"] = itemDictionary
-    EnnemiDictionary = spritesheet.SpriteSheet(
-        "Images/Animations/platformerGraphics_otherStyle/Enemies/Enemies_spritesheet.png",
-        "Images/Animations/platformerGraphics_otherStyle/Enemies/Enemies_spritesheet.xml")
-    imageBank["all_tiles"] = EnnemiDictionary
+    itemDictionary = spritesheet.SpriteSheet(
+        "Images/Animations/platformerGraphics_otherStyle/Enemies/enemies_spritesheet.png",
+        "Images/Animations/platformerGraphics_otherStyle/Enemies/enemies_spritesheet.xml")
+    imageBank["all_items"] = itemDictionary
     return imageBank
 
 
@@ -495,6 +495,7 @@ def level(lvlDict={}):
         mytiles["disapTiles"] = []
         mytiles["gems"] = []
         mytiles["coins"] = []
+        mytiles["ennemis"] = []
         switchCounter = 0
         platformCounter = 0
         nb_l = len(tileMap)
@@ -506,7 +507,6 @@ def level(lvlDict={}):
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
                                          y=50 * i))
-
                 if tileMap[i][j] == 1111:
                     mytiles["affectedByButton"].append(
                         button_Platform(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
@@ -604,6 +604,9 @@ def level(lvlDict={}):
                 if tileMap[i][j] == 12:
                     newSpike = spikes(fenetre, x=50 * j, y=50 * i)
                     mytiles["styleTileList"].append(newSpike)
+                if titleMap[i][j] == 69:
+                    bad = Badguys(fenetre, x=50*j, y=50*i )
+                    mytiles["ennemis"].append(bad)
                 if tileMap[i][j] == 13:
                     newSpike = spikes(fenetre, x=50 * j, y=50 * i)
                     mytiles["affectedByButton"].append(newSpike)
@@ -792,7 +795,31 @@ class lava(ElementGraphique):
     def afficher(self):
         super().afficher()
         return self
+class Badguys(ElementAnime):
+    def __init__(self, img, fen, x, y):
+        bad = pygame.Surface((37,48)), pygame.SRCALPHA)
+        bad.blit(imageBank["all_tiles"].get_image_name("snailWalk1"),(0,0),(0,27,37,48))
 
+        super().__init__(img,fen,x,y)
+
+        self.dx = random.randint(-5,5)
+    #new_badrect=0
+
+    def deplacer(self,world):
+        new_badrect= copy.deepcopy(self.rect)
+        #new_badrect= self.rect.x
+        if world.collide_map(new_badrect):
+            self.dx = -self.dx
+            new_badrect.x += self.dx
+            self.rect.x = new_badrect.x
+        else :
+            new_badrect.x += self.dx
+            self.rect.x = new_badrect.x
+
+    def end(self, fen):
+        w, h = self.fenetre.get_size()
+        if self.rect.x == perso.rect.x:
+            del mechant[self]
 
 class spikes(ElementGraphique):
     def __init__(self, fen, x=0, y=0):
@@ -1032,23 +1059,22 @@ gameDict["Lvl_0"]["tile_map"] = [
     [1, 1, 1, 0, 0, 1111, 0, 1111, 0, 1111, 0, 0, 1111, 0, 1, 1, 1, 1, 1, 0, 0, 1111, 0, 0, 1, 1, 0, 0, 1], ]  # 14
 gameDict["Lvl_0"]["key_pos"] = [(1017, 575), (150, 600), (750, 550), (400, 600)]
 gameDict["Lvl_1"] = {}
-gameDict["Lvl_1"]["tile_map"] =  [
+gameDict["Lvl_1"]["tile_map"] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0],  # 3
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 9, 0],  # 4
-    [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],  # 5
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
-    [1, 1, 1, 1, 1, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],  # 9
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 12
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0],  # 13
-    [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], ]
+    [0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0],  # 2
+    [0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9],  # 3
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 0, 0, 78, 0, 0, 0, 0, 112, 0, 0, 4, 112, 3, 3],  # 4
+    [77, 0, 0, 0, 0, 0, 36, 0, 0, 4, 44, 0, 0, 0, 0, 0, 0, 112, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 77],  # 5
+    [0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+    [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0],  # 7
+    [16, 0, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 77, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
+    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0, 112, 0, 0, 0, 112, 0, 0, 112, 7, 6, 7, 0],  # 9
+    [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0],  # 10
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 11
+    [92, 7, 0, 77, 0, 0, 0, 0, 78, 0, 0, 0, 78, 7, 0, 0, 0, 0, 78, 0, 0, 0, 0, 77, 0, 7, 0, 0, 0],  # 12
+    [91, 10, 0, 14, 0, 0, 0, 112, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
+    [1, 1, 1, 1, 1, 112, 2, 2, 2, 2, 2, 2, 112, 112, 112, 112, 112, 112, 1, 1, 1, 1, 1, 112, 112, 1, 1, 1, 1], ]  # 14
 gameDict["Lvl_1"]["key_pos"] = [(1017, 600), (20, 340), (750, 425), (400, 250)]
-gameDict["Lvl"]
 # timer stuff
 playtimePerLvl = 100  # time in seconds
 timeConst = playtimePerLvl
