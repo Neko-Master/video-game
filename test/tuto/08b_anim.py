@@ -315,24 +315,10 @@ class Joueur(ElementAnimeDir):
 
 
 class Badguys(ElementAnime):
-    def __init__(self, img, fen, maMap):
-
-        x = []
-        y = []
-        z = 0
-
-        nb_l = len(maMap)
-        nb_c = len(maMap[0])
-        for i in range(nb_l):
-            for j in range (nb_c):
+    def __init__(self, img, fen):
 
 
-                if maMap[i][j]==6:
-                    x.append(i*50)
-                    y.append(j*50)
-
-
-        super().__init__(img,fen,x[z],y[z])
+        super().__init__(img,fen,x,y)
 
         self.dx = random.randint(-5,5)
 

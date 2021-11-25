@@ -47,7 +47,7 @@ def lire_images():
     imageBank["fond"] = pygame.image.load(
         "Images/Animations/platformerGraphics_otherStyle/bg_castle.png").convert_alpha()
     imageBank["mur"] = pygame.image.load("Images/mur.png").convert_alpha()
-    imageBank["mur"] = pygame.transform.scale(imageBank["mur"], (64, 64))
+    imageBank["mur"] = pygame.transform.scale(imageBank["mur"], (50, 50))
     imageBank["coin_hud"] = pygame.transform.scale(
         pygame.image.load("Images/Animations/coinAnimation/coin_1.png").convert_alpha(), (25, 25))
     imageBank["spinning_coin"] = []
@@ -56,7 +56,10 @@ def lire_images():
             pygame.image.load("Images/Animations/coinAnimation/coin_" + str(i + 1) + ".png").convert_alpha())
     imageBank["flame"] = []
     for i in range(4):
-        imageBank["flame"].append(pygame.image.load("Images/Animations/flameBall_" + str(i) + ".png").convert_alpha())
+        im = pygame.image.load("Images/Animations/flameBall_" + str(i) + ".png").convert_alpha()
+        im = pygame.transform.scale(im,(32,32))
+        imageBank["flame"].append(im)
+
     for i in range(10):
         imageBank["number_" + str(i)] = pygame.image.load(
             "Images/Animations/platformerGraphics_otherStyle/HUD/hud_" + str(i) + ".png").convert_alpha()
@@ -267,27 +270,7 @@ class Joueur(ElementAnimeDir):
             self.rect = new_rect
 
 
-class Badguys(ElementAnime):
-    def __init__(self, img, fen, maMap):
 
-        x = []
-        y = []
-        z = 0
-
-        nb_l = len(maMap)
-        nb_c = len(maMap[0])
-        for i in range(nb_l):
-            for j in range (nb_c):
-
-
-                if maMap[i][j]==6:
-                    x.append(i*50)
-                    y.append(j*50)
-
-
-        super().__init__(img,fen,x[z],y[z])
-
-        self.dx = random.randint(-5,5)
 
 
 
@@ -335,11 +318,11 @@ class world():
                 if self.maMap[i][j] == 5:
                     mur = ElementGraphique(imageBank["dirt"], fenetre, x=50 * j, y=50 * i)
                     mur.afficher()
-            mechant = []
-            for j in range(nb_c):
-                if self.maMap[i][j] == 6:
-                    bad = Badguys(imageBank["flame"], fenetre, x=50 * j, y=50 * i)
-                    mechant.append(bad)
+
+
+
+
+
 
 
 
@@ -360,28 +343,39 @@ class world():
             return True
 
         return False
-    super(world,._
-    _init__()
-    self.arg = arg
+
 
 class Badguys(ElementAnime):
-    def __init__(self, img, fen, x, y):
 
+    def __init__(self, img, fen, x, y):
 
         super().__init__(img,fen,x,y)
 
+
+
+
+
+
         self.dx = random.randint(-5,5)
+    #new_badrect=0
 
-     def deplacer(self):
-
-
-        if world.collide_map():
-            print("Deplacement refusé")
+    def deplacer(self,world):
+        new_badrect= copy.deepcopy(self.rect)
+        #new_badrect= self.rect.x
+        if world.collide_map(new_badrect):
             self.dx = -self.dx
-            self.rect.x += self.dx
+            new_badrect.x += self.dx
+            self.rect.x = new_badrect.x
         else :
-            print("Deplacement accepté")
-            self.rect.x += self.dx
+            new_badrect.x += self.dx
+            self.rect.x = new_badrect.x
+
+    def end(self, fen):
+        w, h = self.fenetre.get_size()
+        if self.rect.x == perso.rect.x:
+            del mechant[self]
+
+
 
 
 
@@ -436,6 +430,8 @@ largeur = 700
 hauteur = 700
 fenetre = pygame.display.set_mode((largeur, hauteur), pygame.NOFRAME)
 
+World = world(fenetre)
+
 imageBank = lire_images()
 soundBank = lire_sounds()
 
@@ -444,6 +440,18 @@ soundBank = lire_sounds()
 # lecture de l'image du perso
 
 perso = Joueur(imageBank["player_2"], fenetre, 80, 70)
+
+#ennemi
+mechant = []
+nb_l = len(World.maMap)
+nb_c = len(World.maMap[0])
+for i in range(nb_l):
+    for j in range (nb_c):
+        if World.maMap[i][j]==6:
+            bad = Badguys(imageBank["flame"], fenetre, x=50 * j, y=50 * i)
+            mechant.append(bad)
+
+
 
 
 class collectable(ElementAnime):
@@ -494,3 +502,211 @@ blurryScreenImg = pygame.Surface((fenetre.get_size()))
 blurryScreenImg.fill((77, 77, 77))
 blurryScreenImg.set_alpha(111)
 blurrScreen = ElementGraphique(blurryScreenImg, fenetre)
+
+# servira a regler l'horloge du jeu
+horloge = pygame.time.Clock()
+# hella variables for the game xD
+i = 1;
+continuer = 1
+# the menus
+main_menu = True
+player_selection_menu = False
+game_paused = False
+end_screen = False
+display_blurryScreen = False
+defaultPlayer = 1
+# Ingame variables
+player_lives = 3
+player_gems = 0
+coins_collected = 0
+coinArr = []
+gemArr = []
+for i in range(10):
+    posX = random.randint(20, 750)
+    posY = random.randint(20, 750)
+    coinArr.append(collectable(imageBank["spinning_coin"], soundBank["coin"], fenetre, posX, posY))
+for i in range(10):
+    posX = random.randint(20, 750)
+    posY = random.randint(20, 750)
+    imgArr = []
+    imgArr.append(imageBank["blue_gem"])
+    gemArr.append(collectable(imgArr, soundBank["gem"], fenetre, posX, posY))
+# timer stuff
+playtimePerLvl = 300  # time in seconds
+timeConst = playtimePerLvl
+secondsPassed = 0
+timerBuffer = 0
+# music stuff
+soundBank["menu_music"].play(10)
+lvlMusicPlaying = False
+pygame.mixer.music.load("Sounds/Backgroundmusic.ogg")  # has to be done like this so you can pause/unpause
+pygame.mixer.music.set_volume(0.25)
+# start point of timer
+start_ticks = pygame.time.get_ticks()
+while continuer:
+    # fixons le nombre max de frames / secondes
+    horloge.tick(30)
+    i = i + 1
+    if main_menu:
+        for fonds in fondarr:
+            fonds.afficher()
+        if menuQuitButton.clicked:
+            continuer = 0
+        if menuStartButton.clicked:
+            main_menu = False
+            player_selection_menu = True
+            fenetre.fill((0, 0, 0))
+            pygame.display.flip()
+        # Affichage du Texte
+        texte.afficher()
+        menuStartButton.afficher()
+        menuQuitButton.afficher()
+        pygame.display.flip()
+
+    elif player_selection_menu:
+        for fonds in fondarr:
+            fonds.afficher()
+        textePlayerMenu.afficher()
+        ingameExitButton.afficher()
+        if ingameExitButton.clicked:
+            continuer = 0
+        # generate the clickable players
+        for i in range(4):
+            playerButtons[i].afficher()
+            if playerButtons[i].clicked:
+                defaultPlayer = i + 1
+                perso = Joueur(imageBank["player_" + str(defaultPlayer)], fenetre, 80, 70)
+                player_selection_menu = False
+                fenetre.fill((0, 0, 0))
+                start_ticks = pygame.time.get_ticks()
+                pygame.display.flip()
+        pygame.display.flip()
+
+    elif game_paused:
+        # stop the timer while game is paused
+        timerBuffer = secondsPassed
+        if not display_blurryScreen:
+            blurrScreen.afficher()
+            display_blurryScreen = True
+        pygame.mixer.music.pause()
+        pauseText.afficher()
+        pygame.display.flip()
+        # another cool way to use buttons
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_y:
+                    continuer = 0
+                    break
+                if event.key == pygame.K_n:
+                    pygame.mixer.music.unpause()
+                    game_paused = False
+                    display_blurryScreen = False
+                    start_ticks = pygame.time.get_ticks()
+
+    elif end_screen:
+        pygame.mixer.music.stop()
+        touches = pygame.key.get_pressed()
+        if touches[pygame.K_ESCAPE]:
+            continuer = 0
+        for fonds in fondarr:
+            fonds.afficher()
+        if endScreenQuitButton.clicked:
+            continuer = 0
+        # reset time and stats here to restart the game
+        if endScreenStartButton.clicked:
+            end_screen = False
+            playtimePerLvl = timeConst
+            start_ticks = pygame.time.get_ticks()
+            secondsPassed = 0
+            timerBuffer = 0
+            lvlMusicPlaying = False
+
+        endScreenMessage.afficher()
+        endScreenStartButton.afficher()
+        endScreenQuitButton.afficher()
+        pygame.display.flip()
+    # TODO create methods for the levels and call them instaed of everything in this loop
+    else:
+        soundBank["menu_music"].stop()
+        if not lvlMusicPlaying:
+            lvlMusicPlaying = True
+            pygame.mixer.music.play(10)
+        touches = pygame.key.get_pressed()
+        if touches[pygame.K_ESCAPE]:
+            game_paused = True
+        for fonds in fondarr:
+            fonds.afficher()
+        if ingameExitButton.clicked == 1:
+            game_paused = True
+        secondsPassed = int(
+            timerBuffer + (pygame.time.get_ticks() - start_ticks) / 1000)  # calculate how many seconds played
+        if secondsPassed >= timeConst:  # you have 300s to reach the end of the lvl
+            end_screen = True
+            endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre, x=300,
+                                                y=200)
+        playtimePerLvl = timeConst - secondsPassed
+        if player_lives < 0:
+            end_screen = True
+            endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre, x=300,
+                                                y=200)
+        perso.deplacer(World)
+
+        '''
+        if collide_map(maMap,perso.rect):
+            print("Touché")
+        else :
+            print("libre")
+        '''
+        World.afficher()
+        for e in mechant:
+            e.deplacer(World)
+
+
+        # collisions avec les balles
+        '''
+        for b in mechant:
+            if perso.contact(b) :
+                continuer = 0
+        '''
+        '''
+        for b in mechant:
+            for bb in mechant:
+                if b != bb and b.contact(bb) :
+                    b.dx = -b.dx
+                    b.dy = -b.dy
+        '''
+
+        # Affichage du fond
+        for fonds in fondarr:
+            fonds.afficher()
+
+        World.afficher()
+
+        # Affichage Perso
+        perso.afficher()
+
+        for e in mechant:
+            e.afficher()
+        for coin in coinArr:
+            if not coin.collected:
+                coin.afficher()
+            else:
+                coins_collected = coins_collected + 1
+                coinArr.remove(coin)
+        for gem in gemArr:
+            if not gem.collected:
+                gem.afficher()
+            else:
+                player_gems = player_gems + 1
+                gemArr.remove(gem)
+        ingameExitButton.afficher()
+        display_hud(fenetre, player_lives, player_gems, coins_collected, playtimePerLvl)
+        # rafraichissement
+        pygame.display.flip()
+
+    # if we don't need to handle the events we use pump instead of the for-loop
+    pygame.event.pump()
+    # for event in pygame.event.get():  # parcours de la liste des evenements recus
+    # do stuff with events
+# fin du programme principal...
+pygame.quit()
