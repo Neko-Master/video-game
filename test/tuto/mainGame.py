@@ -29,7 +29,7 @@ def lire_images():
     imageBank["hud_gem_blue"] = pygame.transform.scale(pygame.image.load(
         "Images/Animations/platformerGraphics_otherStyle/HUD/hud_gem_blue.png").convert_alpha(), (30, 23))
     imageBank["x_sign"] = pygame.transform.scale(pygame.image.load(
-        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_x.png").convert_alpha(), (18, 16.8))
+        "Images/Animations/platformerGraphics_otherStyle/HUD/hud_x.png").convert_alpha(), (18, 17))
     imageBank["sol"] = pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfMid.png")
     imageBank["sol"] = pygame.transform.scale(imageBank["sol"], (50, 50))
     imageBank["solleft"] = pygame.image.load("Images/Animations/platformerGraphics_otherStyle/Tiles/grassHalfLeft.png")
@@ -77,8 +77,8 @@ def lire_images():
         image = pygame.image.load(
             "Images/Animations/platformerGraphics_otherStyle/HUD/hud_" + str(i) + ".png")
         imageBank["small_number_" + str(i)] = pygame.transform.scale(image.convert_alpha(),
-                                                                     (image.get_width() * 0.65,
-                                                                      image.get_height() * 0.65))
+                                                                     (image.get_width() * 1,
+                                                                      image.get_height() * 1))
     playerWidth = 48
     playerHeight = 48
     imageBank["player_4"] = {}
@@ -107,7 +107,7 @@ def lire_images():
         imageBank["player_4"]["bas"].append(image)
 
     # create 3 players you can choose from
-    playerWidth = 36.664
+    playerWidth = 37
     for i in range(3):
         imageBank["player_" + str(i + 1)] = {}
         # right
@@ -152,14 +152,21 @@ def lire_images():
         "Images/Animations/platformerGraphics_otherStyle/Tiles/tiles_spritesheet.png",
         "Images/Animations/platformerGraphics_otherStyle/Tiles/tiles_spritesheet.xml")
     imageBank["all_tiles"] = tilesDictionary
+
     hudDictionary = spritesheet.SpriteSheet(
         "Images/Animations/platformerGraphics_otherStyle/HUD/hud_spritesheet.png",
         "Images/Animations/platformerGraphics_otherStyle/HUD/hud_spritesheet.xml")
     imageBank["hud_elements"] = hudDictionary
+
     itemDictionary = spritesheet.SpriteSheet(
         "Images/Animations/platformerGraphics_otherStyle/Items/items_spritesheet.png",
         "Images/Animations/platformerGraphics_otherStyle/Items/items_spritesheet.xml")
     imageBank["all_items"] = itemDictionary
+
+    enemiDictionary = spritesheet.SpriteSheet(
+        "Images/Animations/platformerGraphics_otherStyle/Enemies/enemies_spritesheet.png",
+        "Images/Animations/platformerGraphics_otherStyle/Enemies/enemies_spritesheet.xml")
+    imageBank["all_enemi"] = enemiDictionary
     return imageBank
 
 
@@ -404,32 +411,7 @@ class Joueur(ElementAnimeDir):
             self.rect.left = 0
 
 
-class Balle(ElementAnime):
-    def __init__(self, img, fen):
 
-        w, h = fen.get_size()
-
-        x = random.randint(0, w)
-        y = random.randint(0, h)
-
-        super().__init__(img, fen, x, y)
-
-        self.dx = random.randint(-5, 5)
-        self.dy = random.randint(-5, 5)
-
-    def deplacer(self):
-        self.rect.x += self.dx
-        self.rect.y += self.dy
-
-        w, h = self.fenetre.get_size()
-
-        # a gauche ou droite
-        if self.rect.x < 0 or self.rect.x + self.rect.w > w:
-            self.dx = -self.dx
-
-        # en haut ou bas
-        if self.rect.y < 0 or self.rect.y + self.rect.h > h:
-            self.dy = -self.dy
 
 
 def display_hud(fenetre, time, colorKeys={}):
@@ -491,6 +473,7 @@ def level(lvlDict={}):
         mytiles["disapTiles"] = []
         mytiles["gems"] = []
         mytiles["coins"] = []
+        mytiles["enemis"] = []
         switchCounter = 0
         platformCounter = 0
         nb_l = len(tileMap)
@@ -499,9 +482,7 @@ def level(lvlDict={}):
         for i in range(nb_l):
             for j in range(nb_c):
                 if tileMap[i][j] == 1:
-                    mytiles["tileList"].append(
-                        ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
-                                         y=50 * i))
+                    mytiles["tileList"].append(ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j, y=50 * i))
                 if tileMap[i][j] == 1111:
                     mytiles["affectedByButton"].append(
                         button_Platform(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
@@ -518,7 +499,7 @@ def level(lvlDict={}):
                 if tileMap[i][j] == 111:
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
-                                         y=(50 * i) - 21))
+                                         y=(50 * i) ))
                 if tileMap[i][j] == 2:
                     mytiles["tileList"].append(lava(fenetre, x=50 * j, y=50 * i))
                 if tileMap[i][j] == 3:
@@ -560,6 +541,10 @@ def level(lvlDict={}):
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
                                          y=50 * i))
+                if tileMap[i][j] == 22:
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleCenter_rounded.png"), fenetre, x=50 * j,
+                                         y=50 * i))
                 if tileMap[i][j] == 6:
                     mytiles["styleTileList"].append(
                         ElementGraphique(sprite.get_image_name("window.png"), fenetre, x=50 * j,
@@ -599,6 +584,9 @@ def level(lvlDict={}):
                 if tileMap[i][j] == 12:
                     newSpike = spikes(fenetre, x=50 * j, y=50 * i)
                     mytiles["styleTileList"].append(newSpike)
+                if tileMap[i][j] == 69:
+                    bad = Badguys(fenetre, x=50*j, y=50*i )
+                    mytiles["enemis"].append(bad)
                 if tileMap[i][j] == 13:
                     newSpike = spikes(fenetre, x=50 * j, y=50 * i)
                     mytiles["affectedByButton"].append(newSpike)
@@ -625,13 +613,42 @@ def level(lvlDict={}):
                     cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfLeft.png"), (0, 0), (0, 0, 50, 30))
                     newPlatform = movingPlatform(cropped, fenetre, 50 * j, 50 * j, (50 * i) + 20, (50 * i) - 300, 3)
                     mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 18:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfRight.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, 50 * j, (50 * i) + 20, (50 * i) - 300, 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 38:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfRight.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, 50 * j, (50 * i) + 20, (50 * i) - 250, 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 48:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfLeft.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, 50 * j, (50 * i) + 20, (50 * i) - 250, 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 27:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfLeft.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, (50 * j) + 450, (50 * i), (50 * i) , 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 30:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfRight.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, (50 * j) + 450, (50 * i), (50 * i) , 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 39:
+                    cropped = pygame.Surface((100, 20), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (50, 0), (0, 32, 50, 20))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, (50 * j) + 450, (50 * i), (50 * i) , 3)
+                    mytiles["tileList"].append(newPlatform)
+
                 if tileMap[i][j] == 16:
                     cropped = pygame.Surface((100, 20), pygame.SRCALPHA)
                     cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (0, 0), (0, 32, 50, 20))
                     cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (50, 0), (0, 32, 50, 20))
-                    newPlatform = movingPlatform(cropped, fenetre, (50 * j), (50 * j) + 550, (50 * i) + 45,
-                                                 (50 * i) + 45,
-                                                 3.5)
+                    newPlatform = movingPlatform(cropped, fenetre, (50 * j), (50 * j) + 550, (50 * i) + 45,(50 * i) + 45, 3.5)
                     mytiles["tileList"].append(newPlatform)
                 if tileMap[i][j] == 78:
                     mytiles["coins"].append(
@@ -678,6 +695,7 @@ def level(lvlDict={}):
                 tile.afficher()
             for tile in tiles["disapTiles"]:
                 tile.afficher()
+
             keyCounter = 0
             for color, value in keys.items():
                 if value.collected:
@@ -691,6 +709,11 @@ def level(lvlDict={}):
                 switchElem.afficher(tiles["affectedByButton"])
             perso.afficher()
             perso.deplacer(tiles["tileList"])
+            for m in tiles["enemis"]:
+                m.afficher()
+                m.deplacer(tiles["tileList"])
+                if not m.alive:
+                    tiles["enemis"].remove(m)
             if keyCounter == 4 and tiles["door"].open == False:
                 tiles["door"].open = True
                 soundBank["doorOpens"].play()
@@ -787,6 +810,40 @@ class lava(ElementGraphique):
     def afficher(self):
         super().afficher()
         return self
+
+class Badguys(ElementGraphique):
+    def __init__(self, fen, x, y):
+        bad = pygame.Surface((35,35), pygame.SRCALPHA)
+        bad.blit(pygame.transform.scale(imageBank["all_enemi"].get_image_name("snailWalk1.png"),(35,35)),(0,0),(0,0,35,35))
+        self.alive = True
+        super().__init__(bad,fen,x,y + 15)
+        self.collected = False
+
+        self.dx = 2
+        self.dy = 15
+    #new_badrect=0
+
+    def deplacer(self,tilelist=[]):
+        new_badrect= copy.deepcopy(self.rect)
+        new_badrect.x += self.dx
+        for tile in tilelist :
+            if tile.rect.colliderect(new_badrect.x, self.rect.y, self.rect.width, self.rect.height):
+                    new_badrect.x = self.rect.x
+                    self.dx = -self.dx
+                    new_badrect.x += self.dx
+                    self.rect.x = new_badrect.x
+            else :
+                self.rect.x = new_badrect.x
+        if self.rect.colliderect(perso.rect) and self.rect.y - self.rect.height > perso.rect.y :
+            self.alive = False
+        elif self.rect.colliderect(perso.rect) and self.rect.y <= perso.rect.y+ perso.rect.height :
+            perso.lives =0
+
+
+
+
+
+
 
 
 class spikes(ElementGraphique):
@@ -922,10 +979,6 @@ class disappearing_Platform(ElementGraphique):
         return self
 
 
-mes_balles = []
-for i in range(3):
-    balle = Balle(imageBank["flame"], fenetre)
-    mes_balles.append(balle)
 
 # lecture de l'image du fond
 fondarr = []
@@ -974,20 +1027,7 @@ blurryScreenImg.fill((77, 77, 77))
 blurryScreenImg.set_alpha(111)
 blurrScreen = ElementGraphique(blurryScreenImg, fenetre)
 # 1 2 3 4 5 6 7 8 9 1*1 2 3 4 5 6 7 8 9 2*1 2 3 4 5 6 7 8 9 3*
-maMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 9
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-         [0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0, 0],  # 11
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0],  # 12
-         [2, 3, 4, 0, 0, 0, 0, 2, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 3, 3, 3, 4],  # 13
-         [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], ]  # 14
+ # 14
 
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
@@ -1016,7 +1056,7 @@ gameDict["Lvl_0"]["tile_map"] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0],  # 5
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
     [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0],  # 9
@@ -1043,6 +1083,24 @@ gameDict["Lvl_1"]["tile_map"] = [
     [91, 10, 0, 14, 0, 0, 0, 112, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
     [1, 1, 1, 1, 1, 112, 2, 2, 2, 2, 2, 2, 112, 112, 112, 112, 112, 112, 1, 1, 1, 1, 1, 112, 112, 1, 1, 1, 1], ]  # 14
 gameDict["Lvl_1"]["key_pos"] = [(1017, 600), (20, 340), (750, 425), (400, 250)]
+gameDict["Lvl_2"] = {}
+gameDict["Lvl_2"]["tile_map"] = [
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+   [0, 0, 7, 6, 7, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 39, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
+   [0, 0, 0, 0, 0, 11, 0, 0, 0, 111, 0, 0, 69, 0, 0, 111, 0, 0, 22, 2, 2, 2, 2, 22, 0, 0, 0, 0, 0],  # 3
+   [0, 78, 0, 0, 11, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 22, 22, 22, 22, 22, 22, 0, 0, 0, 9, 0],  # 4
+   [0, 0, 0, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],  # 5
+   [7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+   [0, 48, 38, 0, 0, 0, 0, 0, 77, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0],  # 8
+   [22, 77, 69, 0, 22, 0, 0, 27, 30, 0, 0, 0, 0, 0, 0, 0, 0, 11, 11, 11, 11,11,11, 0, 0, 0, 0, 77, 0],  # 9
+   [22, 22, 22, 22, 22, 0, 77, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],  # 10
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 11, 11, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0],  # 11
+   [0, 0, 78, 0, 6, 7, 0, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 12
+   [0, 0, 78, 0, 0, 69, 0, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 11, 0, 15, 18, 0, 0, 0],  # 13
+   [1, 1, 1, 1, 1, 1, 1, 111, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2], ]
+gameDict["Lvl_2"]["key_pos"] = [(1300, 300), (100, 400), (600, 100), (400, 200)]
+
 # timer stuff
 playtimePerLvl = 100  # time in seconds
 timeConst = playtimePerLvl
@@ -1191,82 +1249,27 @@ while continuer:
             defaultLvl = 2
         else:
             end_screen = True
-    else:
+    elif defaultLvl == 2:
         soundBank["menu_music"].stop()
-        if not lvlMusicPlaying:
-            lvlMusicPlaying = True
-            pygame.mixer.music.play(10)
-        touches = pygame.key.get_pressed()
-        if touches[pygame.K_ESCAPE]:
-            game_paused = True
-        for fonds in fondarr:
-            fonds.afficher()
-        if ingameExitButton.clicked == 1:
-            game_paused = True
-        secondsPassed = int(
-            timerBuffer + (pygame.time.get_ticks() - start_ticks) / 1000)  # calculate how many seconds played
-        if secondsPassed >= timeConst:  # you have 300s to reach the end of the lvl
+        if not pygame.mixer.music.get_busy():
+            pygame.mixer.music.load("Sounds/lvl1_music.mp3")
+            pygame.mixer.music.play()
+        lvlPassed = level(gameDict["Lvl_2"])
+        pygame.mixer.pause()
+        if lvlPassed == -1:
+            continuer = 0
+        elif lvlPassed == -2:
+            endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre)
             end_screen = True
-            endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre, x=300,
-                                                y=200)
-        playtimePerLvl = timeConst - secondsPassed
-        if perso.lives <= 0:
+        elif lvlPassed == -3:
+            endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre)
             end_screen = True
-            endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre, x=300,
-                                                y=200)
-        perso.deplacer()
-
-        '''
-        if collide_map(maMap,perso.rect):
-            print("Touché")
-        else :
-            print("libre")
-        '''
-
-        for e in mes_balles:
-            e.deplacer()
-
-        # collisions avec les balles
-        '''
-        for b in mes_balles:
-            if perso.contact(b) :
-                continuer = 0
-        '''
-        '''
-        for b in mes_balles:
-            for bb in mes_balles:
-                if b != bb and b.contact(bb) :
-                    b.dx = -b.dx
-                    b.dy = -b.dy
-        '''
-
-        # Affichage du fond
-        for fonds in fondarr:
-            fonds.afficher()
-
-        afficher_map(maMap, imageBank)
-
-        # Affichage Perso
-        perso.afficher()
-
-        for e in mes_balles:
-            e.afficher()
-        for coin in coinArr:
-            if not coin.collected:
-                coin.afficher()
-            else:
-                coins_collected = coins_collected + 1
-                coinArr.remove(coin)
-        for gem in gemArr:
-            if not gem.collected:
-                gem.afficher()
-            else:
-                player_gems = player_gems + 1
-                gemArr.remove(gem)
-        ingameExitButton.afficher()
-        display_hud(fenetre, playtimePerLvl)
-        # rafraichissement
-        pygame.display.flip()
+        elif lvlPassed:
+            defaultLvl =0
+            endScreenMessage = ElementGraphique(font.render("Congratulation ! You won ! Wanna try again ?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        else:
+            end_screen = True
 
     # if we don't need to handle the events we use pump instead of the for-loop
     pygame.event.pump()
