@@ -474,7 +474,6 @@ def level(lvlDict={}):
         mytiles["gems"] = []
         mytiles["coins"] = []
         mytiles["enemis"] = []
-        mytiles["bloc"] = []
         switchCounter = 0
         platformCounter = 0
         nb_l = len(tileMap)
@@ -484,7 +483,6 @@ def level(lvlDict={}):
             for j in range(nb_c):
                 if tileMap[i][j] == 1:
                     mytiles["tileList"].append(ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j, y=50 * i))
-                    mytiles["bloc"].append(ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50* j, y=50* i))
                 if tileMap[i][j] == 1111:
                     mytiles["affectedByButton"].append(
                         button_Platform(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
@@ -501,7 +499,7 @@ def level(lvlDict={}):
                 if tileMap[i][j] == 111:
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
-                                         y=(50 * i) - 21))
+                                         y=(50 * i) ))
                 if tileMap[i][j] == 2:
                     mytiles["tileList"].append(lava(fenetre, x=50 * j, y=50 * i))
                 if tileMap[i][j] == 3:
@@ -543,12 +541,14 @@ def level(lvlDict={}):
                     mytiles["tileList"].append(
                         ElementGraphique(sprite.get_image_name("castleCenter.png"), fenetre, x=50 * j,
                                          y=50 * i))
+                if tileMap[i][j] == 22:
+                    mytiles["tileList"].append(
+                        ElementGraphique(sprite.get_image_name("castleCenter_rounded.png"), fenetre, x=50 * j,
+                                         y=50 * i))
                 if tileMap[i][j] == 6:
                     mytiles["styleTileList"].append(
                         ElementGraphique(sprite.get_image_name("window.png"), fenetre, x=50 * j,
                                          y=50 * i))
-                if tileMap[i][j] == 27:
-                    mytiles["bloc"].append(ElementGraphique(sprite.get_image_name("ropeVertical.png"), fenetre, x=50* j, y=50* i))
                 if tileMap[i][j] == 7:
                     torchArr = [sprite.get_image_name("tochLit.png"), sprite.get_image_name("tochLit2.png")]
                     mytiles["styleTileList"].append(
@@ -613,13 +613,42 @@ def level(lvlDict={}):
                     cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfLeft.png"), (0, 0), (0, 0, 50, 30))
                     newPlatform = movingPlatform(cropped, fenetre, 50 * j, 50 * j, (50 * i) + 20, (50 * i) - 300, 3)
                     mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 18:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfRight.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, 50 * j, (50 * i) + 20, (50 * i) - 300, 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 38:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfRight.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, 50 * j, (50 * i) + 20, (50 * i) - 250, 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 48:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfLeft.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, 50 * j, (50 * i) + 20, (50 * i) - 250, 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 27:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfLeft.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, (50 * j) + 450, (50 * i), (50 * i) , 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 30:
+                    cropped = pygame.Surface((50, 30), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("castleHalfRight.png"), (0, 0), (0, 0, 50, 30))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, (50 * j) + 450, (50 * i), (50 * i) , 3)
+                    mytiles["tileList"].append(newPlatform)
+                if tileMap[i][j] == 39:
+                    cropped = pygame.Surface((100, 20), pygame.SRCALPHA)
+                    cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (50, 0), (0, 32, 50, 20))
+                    newPlatform = movingPlatform(cropped, fenetre, 50 * j, (50 * j) + 450, (50 * i), (50 * i) , 3)
+                    mytiles["tileList"].append(newPlatform)
+
                 if tileMap[i][j] == 16:
                     cropped = pygame.Surface((100, 20), pygame.SRCALPHA)
                     cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (0, 0), (0, 32, 50, 20))
                     cropped.blit(imageBank["all_tiles"].get_image_name("bridgeLogs.png"), (50, 0), (0, 32, 50, 20))
-                    newPlatform = movingPlatform(cropped, fenetre, (50 * j), (50 * j) + 550, (50 * i) + 45,
-                                                 (50 * i) + 45,
-                                                 3.5)
+                    newPlatform = movingPlatform(cropped, fenetre, (50 * j), (50 * j) + 550, (50 * i) + 45,(50 * i) + 45, 3.5)
                     mytiles["tileList"].append(newPlatform)
                 if tileMap[i][j] == 78:
                     mytiles["coins"].append(
@@ -666,8 +695,7 @@ def level(lvlDict={}):
                 tile.afficher()
             for tile in tiles["disapTiles"]:
                 tile.afficher()
-            for tile in tiles["bloc"]:
-                tile.afficher()
+
             keyCounter = 0
             for color, value in keys.items():
                 if value.collected:
@@ -683,8 +711,9 @@ def level(lvlDict={}):
             perso.deplacer(tiles["tileList"])
             for m in tiles["enemis"]:
                 m.afficher()
-            for m in tiles["enemis"]:
                 m.deplacer(tiles["tileList"])
+                if not m.alive:
+                    tiles["enemis"].remove(m)
             if keyCounter == 4 and tiles["door"].open == False:
                 tiles["door"].open = True
                 soundBank["doorOpens"].play()
@@ -786,32 +815,36 @@ class Badguys(ElementGraphique):
     def __init__(self, fen, x, y):
         bad = pygame.Surface((35,35), pygame.SRCALPHA)
         bad.blit(pygame.transform.scale(imageBank["all_enemi"].get_image_name("snailWalk1.png"),(35,35)),(0,0),(0,0,35,35))
-
+        self.alive = True
         super().__init__(bad,fen,x,y + 15)
+        self.collected = False
 
         self.dx = 2
         self.dy = 15
     #new_badrect=0
 
-    def deplacer(self,bloc=[]):
+    def deplacer(self,tilelist=[]):
         new_badrect= copy.deepcopy(self.rect)
         new_badrect.x += self.dx
-        for tile in bloc :
+        for tile in tilelist :
             if tile.rect.colliderect(new_badrect.x, self.rect.y, self.rect.width, self.rect.height):
                     new_badrect.x = self.rect.x
                     self.dx = -self.dx
                     new_badrect.x += self.dx
                     self.rect.x = new_badrect.x
-                    print("B")
             else :
                 self.rect.x = new_badrect.x
-                print("work")
+        if self.rect.colliderect(perso.rect) and self.rect.y - self.rect.height > perso.rect.y :
+            self.alive = False
+        elif self.rect.colliderect(perso.rect) and self.rect.y <= perso.rect.y+ perso.rect.height :
+            perso.lives =0
 
 
-    def end(self, fen):
-        w, h = self.fenetre.get_size()
-        if self.rect.x == perso.rect.x:
-            del mechant[self]
+
+
+
+
+
 
 class spikes(ElementGraphique):
     def __init__(self, fen, x=0, y=0):
@@ -994,20 +1027,7 @@ blurryScreenImg.fill((77, 77, 77))
 blurryScreenImg.set_alpha(111)
 blurrScreen = ElementGraphique(blurryScreenImg, fenetre)
 # 1 2 3 4 5 6 7 8 9 1*1 2 3 4 5 6 7 8 9 2*1 2 3 4 5 6 7 8 9 3*
-maMap = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 5
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 9
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
-         [0, 0, 0, 2, 3, 3, 4, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 4, 0, 0, 0, 0],  # 11
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0],  # 12
-         [2, 3, 4, 0, 0, 0, 0, 2, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 3, 3, 3, 4],  # 13
-         [5, 5, 5, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], ]  # 14
+ # 14
 
 # servira a regler l'horloge du jeu
 horloge = pygame.time.Clock()
@@ -1036,7 +1056,7 @@ gameDict["Lvl_0"]["tile_map"] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0],  # 5
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 69, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 69, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
     [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0],  # 9
@@ -1063,6 +1083,24 @@ gameDict["Lvl_1"]["tile_map"] = [
     [91, 10, 0, 14, 0, 0, 0, 112, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 13, 12, 0, 0, 0, 0, 0, 0, 15],  # 13
     [1, 1, 1, 1, 1, 112, 2, 2, 2, 2, 2, 2, 112, 112, 112, 112, 112, 112, 1, 1, 1, 1, 1, 112, 112, 1, 1, 1, 1], ]  # 14
 gameDict["Lvl_1"]["key_pos"] = [(1017, 600), (20, 340), (750, 425), (400, 250)]
+gameDict["Lvl_2"] = {}
+gameDict["Lvl_2"]["tile_map"] = [
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 1
+   [0, 0, 7, 6, 7, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 39, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 2
+   [0, 0, 0, 0, 0, 11, 0, 0, 0, 111, 0, 0, 69, 0, 0, 111, 0, 0, 22, 2, 2, 2, 2, 22, 0, 0, 0, 0, 0],  # 3
+   [0, 78, 0, 0, 11, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 22, 22, 22, 22, 22, 22, 0, 0, 0, 9, 0],  # 4
+   [0, 0, 0, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],  # 5
+   [7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+   [0, 48, 38, 0, 0, 0, 0, 0, 77, 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0],  # 8
+   [22, 77, 69, 0, 22, 0, 0, 27, 30, 0, 0, 0, 0, 0, 0, 0, 0, 11, 11, 11, 11,11,11, 0, 0, 0, 0, 77, 0],  # 9
+   [22, 22, 22, 22, 22, 0, 77, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],  # 10
+   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 11, 11, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0],  # 11
+   [0, 0, 78, 0, 6, 7, 0, 0, 0, 11, 11, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 12
+   [0, 0, 78, 0, 0, 69, 0, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 0, 11, 0, 15, 18, 0, 0, 0],  # 13
+   [1, 1, 1, 1, 1, 1, 1, 111, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2], ]
+gameDict["Lvl_2"]["key_pos"] = [(1300, 300), (100, 400), (600, 100), (400, 200)]
+
 # timer stuff
 playtimePerLvl = 100  # time in seconds
 timeConst = playtimePerLvl
@@ -1211,6 +1249,27 @@ while continuer:
             defaultLvl = 2
         else:
             end_screen = True
+    elif defaultLvl == 2:
+        soundBank["menu_music"].stop()
+        pygame.mixer.music.load("Sounds/lvl1_music.mp3")
+        pygame.mixer.music.play()
+        lvlPassed = level(gameDict["Lvl_2"])
+        pygame.mixer.pause()
+        if lvlPassed == -1:
+            continuer = 0
+        elif lvlPassed == -2:
+            endScreenMessage = ElementGraphique(font.render("Time is up! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        elif lvlPassed == -3:
+            endScreenMessage = ElementGraphique(font.render("You just died! Retry?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        elif lvlPassed:
+            defaultLvl =0
+            endScreenMessage = ElementGraphique(font.render("Congratulation ! You won ! Wanna try again ?", True, (3, 45, 49)), fenetre)
+            end_screen = True
+        else:
+            end_screen = True
+
     else:
         soundBank["menu_music"].stop()
         if not lvlMusicPlaying:
@@ -1243,8 +1302,7 @@ while continuer:
             print("libre")
         '''
 
-        for e in mes_balles:
-            e.deplacer()
+
 
         # collisions avec les balles
         '''
@@ -1269,8 +1327,7 @@ while continuer:
         # Affichage Perso
         perso.afficher()
 
-        for e in mes_balles:
-            e.afficher()
+
         for coin in coinArr:
             if not coin.collected:
                 coin.afficher()
