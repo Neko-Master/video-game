@@ -1128,16 +1128,17 @@ while continuer:
             fenetre.fill((0, 0, 0))
             pygame.display.flip()
             menuStartButton.clicked = False
-        for i in range(lvlButtons.__len__()):
-            lvlButtons[i].afficher()
-            if lvlButtons[i].clicked:
-                defaultLvl = i
-                main_menu = False
-                player_selection_menu = True
-                lvlButtons[i].clicked=False
+        # This is only vor development purposes, uncomment to access the lvl fast
+        # for i in range(lvlButtons.__len__()):
+        #     lvlButtons[i].afficher()
+        #     if lvlButtons[i].clicked:
+        #         defaultLvl = i
+        #         main_menu = False
+        #         player_selection_menu = True
+        #         lvlButtons[i].clicked=False
         # Affichage du Texte
+        #chooseLvlTxt.afficher()
         texte.afficher()
-        chooseLvlTxt.afficher()
         menuStartButton.afficher()
         menuQuitButton.afficher()
         pygame.display.flip()
