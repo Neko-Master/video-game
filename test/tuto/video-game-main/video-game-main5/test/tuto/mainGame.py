@@ -152,18 +152,21 @@ def lire_images():
         "Images/Animations/platformerGraphics_otherStyle/Tiles/tiles_spritesheet.png",
         "Images/Animations/platformerGraphics_otherStyle/Tiles/tiles_spritesheet.xml")
     imageBank["all_tiles"] = tilesDictionary
+
     hudDictionary = spritesheet.SpriteSheet(
         "Images/Animations/platformerGraphics_otherStyle/HUD/hud_spritesheet.png",
         "Images/Animations/platformerGraphics_otherStyle/HUD/hud_spritesheet.xml")
     imageBank["hud_elements"] = hudDictionary
+
     itemDictionary = spritesheet.SpriteSheet(
         "Images/Animations/platformerGraphics_otherStyle/Items/items_spritesheet.png",
         "Images/Animations/platformerGraphics_otherStyle/Items/items_spritesheet.xml")
     imageBank["all_items"] = itemDictionary
-    itemDictionary = spritesheet.SpriteSheet(
+
+    enemiDictionary = spritesheet.SpriteSheet(
         "Images/Animations/platformerGraphics_otherStyle/Enemies/enemies_spritesheet.png",
         "Images/Animations/platformerGraphics_otherStyle/Enemies/enemies_spritesheet.xml")
-    imageBank["all_items"] = itemDictionary
+    imageBank["all_enemi"] = enemiDictionary
     return imageBank
 
 
@@ -408,32 +411,7 @@ class Joueur(ElementAnimeDir):
             self.rect.left = 0
 
 
-class Balle(ElementAnime):
-    def __init__(self, img, fen):
 
-        w, h = fen.get_size()
-
-        x = random.randint(0, w)
-        y = random.randint(0, h)
-
-        super().__init__(img, fen, x, y)
-
-        self.dx = random.randint(-5, 5)
-        self.dy = random.randint(-5, 5)
-
-    def deplacer(self):
-        self.rect.x += self.dx
-        self.rect.y += self.dy
-
-        w, h = self.fenetre.get_size()
-
-        # a gauche ou droite
-        if self.rect.x < 0 or self.rect.x + self.rect.w > w:
-            self.dx = -self.dx
-
-        # en haut ou bas
-        if self.rect.y < 0 or self.rect.y + self.rect.h > h:
-            self.dy = -self.dy
 
 
 def display_hud(fenetre, time, colorKeys={}):
@@ -495,7 +473,8 @@ def level(lvlDict={}):
         mytiles["disapTiles"] = []
         mytiles["gems"] = []
         mytiles["coins"] = []
-        mytiles["ennemis"] = []
+        mytiles["enemis"] = []
+        mytiles["bloc"] = []
         switchCounter = 0
         platformCounter = 0
         nb_l = len(tileMap)
@@ -504,9 +483,8 @@ def level(lvlDict={}):
         for i in range(nb_l):
             for j in range(nb_c):
                 if tileMap[i][j] == 1:
-                    mytiles["tileList"].append(
-                        ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
-                                         y=50 * i))
+                    mytiles["tileList"].append(ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j, y=50 * i))
+                    mytiles["bloc"].append(ElementGraphique(sprite.get_image_name("castleMid.png"), fenetre, x=50* j, y=50* i))
                 if tileMap[i][j] == 1111:
                     mytiles["affectedByButton"].append(
                         button_Platform(sprite.get_image_name("castleMid.png"), fenetre, x=50 * j,
@@ -569,6 +547,8 @@ def level(lvlDict={}):
                     mytiles["styleTileList"].append(
                         ElementGraphique(sprite.get_image_name("window.png"), fenetre, x=50 * j,
                                          y=50 * i))
+                if tileMap[i][j] == 27:
+                    mytiles["bloc"].append(ElementGraphique(sprite.get_image_name("ropeVertical.png"), fenetre, x=50* j, y=50* i))
                 if tileMap[i][j] == 7:
                     torchArr = [sprite.get_image_name("tochLit.png"), sprite.get_image_name("tochLit2.png")]
                     mytiles["styleTileList"].append(
@@ -604,9 +584,9 @@ def level(lvlDict={}):
                 if tileMap[i][j] == 12:
                     newSpike = spikes(fenetre, x=50 * j, y=50 * i)
                     mytiles["styleTileList"].append(newSpike)
-                if titleMap[i][j] == 69:
+                if tileMap[i][j] == 69:
                     bad = Badguys(fenetre, x=50*j, y=50*i )
-                    mytiles["ennemis"].append(bad)
+                    mytiles["enemis"].append(bad)
                 if tileMap[i][j] == 13:
                     newSpike = spikes(fenetre, x=50 * j, y=50 * i)
                     mytiles["affectedByButton"].append(newSpike)
@@ -686,6 +666,8 @@ def level(lvlDict={}):
                 tile.afficher()
             for tile in tiles["disapTiles"]:
                 tile.afficher()
+            for tile in tiles["bloc"]:
+                tile.afficher()
             keyCounter = 0
             for color, value in keys.items():
                 if value.collected:
@@ -699,6 +681,10 @@ def level(lvlDict={}):
                 switchElem.afficher(tiles["affectedByButton"])
             perso.afficher()
             perso.deplacer(tiles["tileList"])
+            for m in tiles["enemis"]:
+                m.afficher()
+            for m in tiles["enemis"]:
+                m.deplacer(tiles["tileList"])
             if keyCounter == 4 and tiles["door"].open == False:
                 tiles["door"].open = True
                 soundBank["doorOpens"].play()
@@ -795,26 +781,32 @@ class lava(ElementGraphique):
     def afficher(self):
         super().afficher()
         return self
-class Badguys(ElementAnime):
-    def __init__(self, img, fen, x, y):
-        bad = pygame.Surface((37,48)), pygame.SRCALPHA)
-        bad.blit(imageBank["all_tiles"].get_image_name("snailWalk1"),(0,0),(0,27,37,48))
 
-        super().__init__(img,fen,x,y)
+class Badguys(ElementGraphique):
+    def __init__(self, fen, x, y):
+        bad = pygame.Surface((35,35), pygame.SRCALPHA)
+        bad.blit(pygame.transform.scale(imageBank["all_enemi"].get_image_name("snailWalk1.png"),(35,35)),(0,0),(0,0,35,35))
 
-        self.dx = random.randint(-5,5)
+        super().__init__(bad,fen,x,y + 15)
+
+        self.dx = 2
+        self.dy = 15
     #new_badrect=0
 
-    def deplacer(self,world):
+    def deplacer(self,bloc=[]):
         new_badrect= copy.deepcopy(self.rect)
-        #new_badrect= self.rect.x
-        if world.collide_map(new_badrect):
-            self.dx = -self.dx
-            new_badrect.x += self.dx
-            self.rect.x = new_badrect.x
-        else :
-            new_badrect.x += self.dx
-            self.rect.x = new_badrect.x
+        new_badrect.x += self.dx
+        for tile in bloc :
+            if tile.rect.colliderect(new_badrect.x, self.rect.y, self.rect.width, self.rect.height):
+                    new_badrect.x = self.rect.x
+                    self.dx = -self.dx
+                    new_badrect.x += self.dx
+                    self.rect.x = new_badrect.x
+                    print("B")
+            else :
+                self.rect.x = new_badrect.x
+                print("work")
+
 
     def end(self, fen):
         w, h = self.fenetre.get_size()
@@ -954,10 +946,6 @@ class disappearing_Platform(ElementGraphique):
         return self
 
 
-mes_balles = []
-for i in range(3):
-    balle = Balle(imageBank["flame"], fenetre)
-    mes_balles.append(balle)
 
 # lecture de l'image du fond
 fondarr = []
@@ -1048,8 +1036,8 @@ gameDict["Lvl_0"]["tile_map"] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 3
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 4
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0],  # 5
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
-    [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 69, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 6
+    [0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 7
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 8
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 7, 0],  # 9
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # 10
