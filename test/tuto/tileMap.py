@@ -187,7 +187,33 @@ class Badguys(ElementAnime):
 
 
 
+for tile in tilelist:
+    if tile.rect.colliderect(new_badrect.x, self.rect.y, self.rect.width, self.rect.height):
+        new_badrect.x = self.rect.x
+        self.dx = -self.dx
+        new_badrect.x += self.dx
+        self.rect.x = new_badrect.x
+    else :
+        self.rect.x = new_badrect.x
+    if tile.rect.colliderect(new_badrect.y, self.rect.x, self.rect.width, self.rect.height):
+        new_badrect.y = self.rect.y
+    else :
+        new_badrect.x = self.rect.x
+        self.dx = -self.dx
+        new_badrect.x += self.dx
+        self.rect.x = new_badrect.x
 
+
+
+
+
+
+
+
+
+if tileMap[i][j] == 69:
+    bad = Badguys(fenetre, x=50*j, y=50*i )
+    mytiles["enemis"].append(bad)
 
 
 
